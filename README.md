@@ -1,4 +1,4 @@
-# Halibut's Blog
+# Halibut's Archive
 
 Welcome to the personal blog and archive of [Halibut205](https://github.com/Halibut205).
 
