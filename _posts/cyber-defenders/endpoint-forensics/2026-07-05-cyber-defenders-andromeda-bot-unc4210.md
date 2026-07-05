@@ -2,7 +2,7 @@
 title: "Cyber Defenders - Andromeda Bot (UNC4210) Writeup"
 date: 2026-07-05 14:10:00 +0700
 categories: [Cyber Defenders, Endpoint Forensics]
-tags: [cyber-defenders, endpoint-forensics, writeup]
+tags: [cyber-defenders, endpoint-forensics, writeup, andromeda-bot, unc4210, turla, memprocfs, usb-forensics]
 ---
 
 **Category**: Endpoint Forensics
