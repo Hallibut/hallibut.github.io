@@ -151,7 +151,7 @@ Scrolling to the right, I observed several DLL libraries created by **Trusted In
 
 Since the question asks for the **first DLL** file, the answer is:
 
-**Answer:**
+**Answer: C:\Users\Tomy\AppData\Local\Temp\Gozekeneka.dll**
 
 > **Q7: Connecting malware to APT groups is crucial for uncovering an attack's broader strategy, motivations, and long-term goals. Based on IOCs and threat intelligence reports, which APT group reactivated this malware for use in its campaigns?**
 > 
