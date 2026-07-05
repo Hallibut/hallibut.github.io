@@ -156,7 +156,7 @@ Since the question asks for the **first DLL** file, the answer is:
 > **Q7: Connecting malware to APT groups is crucial for uncovering an attack's broader strategy, motivations, and long-term goals. Based on IOCs and threat intelligence reports, which APT group reactivated this malware for use in its campaigns?**
 > 
 
-I did some research online and came across this article; there’s a reference at the bottom written by Mandiant:
+I did some research online with the keyword “UNC4210” got from the name of this lab (andromeda-bot-unc4210) and came across this article; there’s a reference at the bottom written by Mandiant:
 
 [Turla: A Galaxy of Opportunity | Mandiant | Google Cloud Blog](https://cloud.google.com/blog/topics/threat-intelligence/turla-galaxy-opportunity/)
 
