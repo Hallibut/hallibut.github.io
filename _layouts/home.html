@@ -50,7 +50,10 @@ layout: default
   {% if paginator.page == 1 %}
     <article class="card-wrapper card">
       <a href="{{ '/categories/cyber-defenders/' | relative_url }}" class="post-preview row g-0 flex-md-row-reverse" style="border: 2px solid var(--color-primary);">
-        <div class="col-md-12">
+        <div class="col-md-5">
+          <img src="{{ '/assets/img/cards/cyberrange-og.png' | relative_url }}" alt="CyberDefenders Writeups Banner">
+        </div>
+        <div class="col-md-7">
           <div class="card-body d-flex flex-column">
             <h1 class="card-title my-2 mt-md-0">
               <i class="fas fa-shield-halved me-2" style="color: var(--color-primary);"></i> CyberDefenders Writeups
@@ -74,7 +77,10 @@ layout: default
     </article>
     <article class="card-wrapper card">
       <a href="{{ '/categories/htb-soc-jobpath/' | relative_url }}" class="post-preview row g-0 flex-md-row-reverse" style="border: 2px solid var(--color-primary);">
-        <div class="col-md-12">
+        <div class="col-md-5">
+          <img src="{{ '/assets/img/cards/CDSA.png' | relative_url }}" alt="HTB SOC Jobpath Notes Banner">
+        </div>
+        <div class="col-md-7">
           <div class="card-body d-flex flex-column">
             <h1 class="card-title my-2 mt-md-0">
               <i class="fas fa-cube me-2" style="color: var(--color-primary);"></i> HTB SOC Jobpath Notes
