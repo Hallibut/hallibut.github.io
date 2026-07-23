@@ -105,7 +105,7 @@ layout: default
   {% endif %}
   {% for post in posts %}
     <article class="card-wrapper card">
-      <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
+      <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse"{% if post.pin %} style="border: 2px solid var(--color-primary);"{% endif %}>
         {% assign card_body_col = '12' %}
 
         {% if post.image %}
