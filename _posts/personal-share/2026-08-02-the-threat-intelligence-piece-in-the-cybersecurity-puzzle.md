@@ -5,12 +5,8 @@ categories: [Personal Share]
 tags: [threat-intel, cyber-defenders]
 pin: true
 image:
-  path: /assets/img/personal-share/how-i-make-my-cyber-adversaries-cry/certified_certificate.png
+  path: /assets/img/personal-share/how-i-make-my-cyber-adversaries-cry/CTIGA.png
 ---
-
-<style>
-  .preview-img { display: none; }
-</style>
 
 ![Certified Certificate](/assets/img/personal-share/how-i-make-my-cyber-adversaries-cry/certified_certificate.png)
 
