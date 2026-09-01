@@ -7,9 +7,9 @@ tags: [cdsa, study-notes, htb-soc-jobpath]
 
 
 
-# Introduction
+## Introduction
 
-## **Incident Handling Definition & Scope**
+### **Incident Handling Definition & Scope**
 
 **Common Terms:**
 
@@ -26,7 +26,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath]
     ![image.png](/assets/img/cdsa/sec1-incident-handling/image.png)
     
 
-## **Incident Handling's Value & Generic Notes**
+### **Incident Handling's Value & Generic Notes**
 
 Different incidents will have different impacts on the organization. More severe incidents require immediate attention and dedicated resources, while lower-rated incidents may still need an initial investigation to confirm whether they are, in fact, IT security incidents.
 
@@ -34,35 +34,35 @@ Different incidents will have different impacts on the organization. More severe
 
 One of the most widely used resources on incident handling is [NIST's Computer Security Incident Handling Guide](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r3.pdf). 
 
-## **Different Types of Real-World Incidents**
+### **Different Types of Real-World Incidents**
 
-### Leaked Credential
+#### Leaked Credential
 
 - Password Leak
 - Private Key Leak
 
-### **Default / Weak Credentials**
+#### **Default / Weak Credentials**
 
 - Default/Factory Password
 
-### **Outdated Software / Unpatched Systems**
+#### **Outdated Software / Unpatched Systems**
 
 - Did not apply new patch
 - Unpatch Windows systems
 
-### **Rogue Employee / Insider Threat**
+#### **Rogue Employee / Insider Threat**
 
 - Bad intent employee → leak sensitive information
 
-### **Phishing / Social Engineering**
+#### **Phishing / Social Engineering**
 
 - Trick users into performing harmful action without their knowledge
 
-### **Supply-Chain Attack**
+#### **Supply-Chain Attack**
 
 - injected a malicious backdoor into new updates
 
-## **Example of Incident Reports**
+### **Example of Incident Reports**
 
 https://cloud.google.com/security/mandiant
 
@@ -74,19 +74,19 @@ https://thedfirreport.com/
 
 These are `incident-specific reports` that focus on one particular event or outbreak
 
-## **Incident Scenario**
+### **Incident Scenario**
 
 The victim in this Scenario is “Insight Nexus”, a global market research firm that handles sensitive competitive data for high-profile clients in the IT sector
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%201.png)
 
-## **Cyber Kill Chain**
+### **Cyber Kill Chain**
 
 Before we start talking about handling incidents, we need to understand the attack lifecycle (a.k.a. the cyber kill chain)
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%202.png)
 
-### #1 `Reconnaissance` stage
+#### #1 `Reconnaissance` stage
 
 - The initial stage where an attacker chooses their target
 - perform information gathering → as much useful data as possible
@@ -95,40 +95,40 @@ Before we start talking about handling incidents, we need to understand the atta
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%203.png)
 
-### #2 `Weaponize` stage
+#### #2 `Weaponize` stage
 
 - Developing malware and embedding it into some types of payload
 - This malware is crafted to be extremely lightweight and undetectable by antivirus and detection tools
 
-### #3 `Delivery` stage
+#### #3 `Delivery` stage
 
 - Payload is delivered to the victim(s)
 - Might be phishing email or social engineering call
 - It can also be physical interaction via USB tokens and similar storage tools that are purposely left around
 - It is extremely rare to deliver a payload that requires the victim to do more than double-click an executable file or a script
 
-### #4 `Exploitation` stage
+#### #4 `Exploitation` stage
 
 - when an exploit or a delivered payload is triggered
 
-### #5 `Installation` stage
+#### #5 `Installation` stage
 
 - the initial stager is executed and is running on the compromised machine
 - **Droppers**: A small piece of code designed onto the target system and execute it
 - **Backdoors**: A backdoor is a type of malware designed to provide the attacker with ongoing access to the compromised system
 - **Rootkits**: A rootkit is a type of malware designed to hide its presence on a compromised system → evade detection by antivirus software and other security tools
 
-### #6 `Command and Control` stage
+#### #6 `Command and Control` stage
 
 - The attacker establishes a remote access capability to the compromised machine
 
-### #7 `Action` stage
+#### #7 `Action` stage
 
 - Perform their objectives (exfiltrate confidential data, obtain the highest level of acces)
 
 → Adversaries don't operate linearly, Our objective is to `stop an attacker from progressing further up the kill chain`, ideally in one of the earliest stages.
 
-## **MITRE ATT&CK Framework**
+### **MITRE ATT&CK Framework**
 
 The MITRE ATT&CK Enterprise Matrix is a knowledge base that documents adversary behavior observed in the wild against enterprise IT environments.
 
@@ -155,7 +155,7 @@ Sub-techniques are children of techniques that capture a particular implementati
 - `T1003.001 - OS Credentials: LSASS Memory`: Refers to adversaries dumping credentials directly from the LSASS process memory when achieving the necessary privileges.
 - `T1021.002 - Remote Services: SMB/Windows Admin Shares`: Refers to adversaries interacting with shares using valid credentials.
 
-## **Pyramid of Pain**
+### **Pyramid of Pain**
 
 The Pyramid of Pain illustrates how much `effort it takes for an adversary to change their tactics` 
 
@@ -169,7 +169,7 @@ The Pyramid of Pain illustrates how much `effort it takes for an adversary to ch
 
 → Behavioral TTP detections (MITRE-based) = `hard to evade`, higher attacker cost, and stronger defense maturity.
 
-## **MITRE ATT&CK integration in TheHive**
+### **MITRE ATT&CK integration in TheHive**
 
 `TheHive` is a case management platform designed for cybersecurity teams to efficiently handle incidents by processing alerts.
 
@@ -181,9 +181,9 @@ The Pyramid of Pain illustrates how much `effort it takes for an adversary to ch
 
 To access TheHive platform, navigate to `http://TARGET_IP:9000`
 
-# The Incident Handling Process
+## The Incident Handling Process
 
-## **Incident Handling Process Overview**
+### **Incident Handling Process Overview**
 
 Just like the Cyber Kill Chain, there are different stages when responding to an incident, defined as the `Incident Handling Process` 
 
@@ -201,13 +201,13 @@ Incident handling could be divine into to main activities:
     - creating and implementing a `recovery plan`.
     - When an incident is fully handled, a report is issued that details the cause and cost of the incident, also, "lessons learned" activities are performed to prevent incidents of a similar type from occurring again.
 
-## **Preparation Stage**
+### **Preparation Stage**
 
-### **Preparation Prerequisites**
+#### **Preparation Prerequisites**
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%209.png)
 
-### **Clear Policies & Documentation**
+#### **Clear Policies & Documentation**
 
 - Contact `information and roles` of the incident handling team members.
 - Contact information for the legal and compliance department, management team,
@@ -232,7 +232,7 @@ amount). The last thing you need during an incident is to wait for weeks for the
 
 → While having documentation in place is vital, it is also important to **document the incident as we investigate**.
 
-### **Tools (Software & Hardware)**
+#### **Tools (Software & Hardware)**
 
 - An `additional laptop or a forensic workstation` for each incident handling team member to preserve disk images and log files, perform data analysis, and investigate without any restrictions (we know malware will be tested here, so tools such as antivirus should be disabled). These devices should be handled appropriately and not in a way that
 introduces risks to the organization.
@@ -255,13 +255,13 @@ introduces risks to the organization.
 
 → Many of the tools mentioned above will be part of what is known as a `jump bag`
 
-### DMARC
+#### DMARC
 
 https://dmarcly.com/blog/how-to-implement-dmarc-dkim-spf-to-stop-email-spoofing-phishing-the-definitive-guide#what-is-spf
 
 DMARC is an `email protection mechanism` designed to stop phishing attacks from spoofing your organization's domain. It automatically rejects emails pretending to come from your company before they reach the recipient.
 
-### **Endpoint Hardening (& EDR)**
+#### **Endpoint Hardening (& EDR)**
 
 Endpoint devices (workstations and laptops) are the most common entry points for attackers. Key actions include:
 
@@ -269,21 +269,21 @@ Endpoint devices (workstations and laptops) are the most common entry points for
 - Instead of letting any program run on the computer, you create a strict `whitelist`. If that is too difficult, you at least `block programs from running` in folders where people normally save files (like the "Downloads" folder). That way, if a user accidentally downloads a virus, the computer simply refuses to open it. pay attention to https://lolbas-project.github.io/ files while implementing whitelisting. Do not overlook them; they are really used in the wild as initial access to bypass whitelisting.
 - Turn on the computer's built-in `firewall` to block shady internet traffic. Then, install `advanced security software` (EDR like [AMSI](https://learn.microsoft.com/en-us/windows/win32/amsi/how-amsi-helps)) that doesn't just look for known viruses, but actively reads and stops sneaky, hidden code before it has a chance to execute.
 
-### **Network Protection**
+#### **Network Protection**
 
-### **Privilege Identity Management / MFA / Passwords**
+#### **Privilege Identity Management / MFA / Passwords**
 
-### **Vulnerability Scanning**
+#### **Vulnerability Scanning**
 
-### **User Awareness Training**
+#### **User Awareness Training**
 
-### **Active Directory Security Assessment**
+#### **Active Directory Security Assessment**
 
-### **Purple Team Exercises**
+#### **Purple Team Exercises**
 
-## **Detection & Analysis Stage**
+### **Detection & Analysis Stage**
 
-### **Initial Investigation**
+#### **Initial Investigation**
 
 - `Date/Time` when the incident was reported. Additionally, `who detected` the incident and/or `who reported` it?
 - `How was the incident detected`?
@@ -307,7 +307,7 @@ We can also view an alert related to this event log in the TheHive Case Manageme
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%2010.png)
 
-### **Incident Severity & Extent Questions**
+#### **Incident Severity & Extent Questions**
 
 When handling a security incident, we should also **try to answer the following questions** to **get an idea of the incident's severity and extent**
 
@@ -319,7 +319,7 @@ When handling a security incident, we should also **try to answer the following 
 - Is the exploit being `used in the wild`?
 - Does the exploit have any `worm-like capabilities`?
 
-### **Incident Confidentiality & Communication**
+#### **Incident Confidentiality & Communication**
 
 - All of the information gathered should be kept on a need-to-know basis unless applicable laws or a management decision instruct us otherwise.
 - When an investigation is launched, we will set some expectations and goals.
@@ -328,7 +328,7 @@ When handling a security incident, we should also **try to answer the following 
     - Rough estimate of how much time the team needs for the investigation
     - Whether we will be able to uncover the adversary or not
 
-### **The Investigation**
+#### **The Investigation**
 
 The investigation starts based on the initially gathered (and limited) information that contains what we know about the incident so far.
 
@@ -336,11 +336,11 @@ With this initial data, we will begin a 3-step cyclic process that will iterate 
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%2011.png)
 
-#### **Initial Investigation Data**
+##### **Initial Investigation Data**
 
 To prevent **premature conclusions** and an **incomplete understanding** of the incident, an investigation must **continuously pursue diverse leads** throughout the entire process rather than fixating on a single discovery.
 
-#### **Creation & Usage Of IOCs**
+##### **Creation & Usage Of IOCs**
 
 `Indicators of Compromise (IOCs)` are technical artifacts (such as IP addresses, file hashes, and file names) used to identify and document cyber attacks. To ensure that the recording, sharing, and analysis of these IOCs remain consistent and standardized, the cybersecurity community relies on specific tools and languages like `OpenIOC`, `YARA`, and `STIX` (which primarily uses the JSON format).
 
@@ -358,13 +358,13 @@ When deploying tools to search for and collect IOCs (such as WMI or PowerShell i
 
 To ensure security, investigators should only use connection protocols or logon types that do not cache credentials, such as **WinRM** or **Logon type 3 (Network Logon)**. Understanding exactly how each tool operates is crucial. A prime example is **PsExec**: it will cache credentials if they are provided explicitly, but it remains safe if run using the currently logged-on user's session without re-entering credentials.
 
-#### **Identification Of New Leads & Impacted Systems**
+##### **Identification Of New Leads & Impacted Systems**
 
 Searching for IOCs across a network often yields numerous hits, but **not all of them represent the actual incident** (some may be false positives caused by overly generic IOCs). 
 
 → Investigators must filter out these false alarms and strictly prioritize the most promising hits for forensic analysis to uncover new investigative leads.
 
-#### **Data Collection and Analysis from the New Leads and Impacted Systems**
+##### **Data Collection and Analysis from the New Leads and Impacted Systems**
 
 Once compromised systems are identified, investigators must carefully **collect and preserve data**. 
 
@@ -374,15 +374,15 @@ During collection, interaction with the system must be kept to an absolute minim
 
 Crucially, a strict `chain of custody` must be maintained to ensure the evidence is court-admissible.
 
-#### **Use of AI in Threat Detection**
+##### **Use of AI in Threat Detection**
 
 Artificial Intelligence, particularly `Generative AI` and `Large Language Models` (LLMs), is revolutionizing Incident Response. Instead of relying on time-consuming manual analysis, AI automates the clustering of alerts, prioritizes threats, reconstructs complete attack narratives (mapped to the MITRE ATT&CK framework), and assists with automated response actions and post-incident learning.
 
-## **Containment, Eradication, and Recovery Stage**
+### **Containment, Eradication, and Recovery Stage**
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%2013.png)
 
-### **Containment**
+#### **Containment**
 
 It is time to enter the containment stage to prevent the incident from causing more damage.
 
@@ -391,25 +391,25 @@ We divide the actions into `short-term containment` and `long-term containment`:
 - **Short-term containment:** Focuses on `*temporary, low-impact actions*` (such as network isolation using VLAN or DNS sinkholing) to `*immediately stop the bleeding*`, buy time for a remediation strategy, and preserve the system's state for forensic evidence collection.
 - **Long-term containment:** Involves making persistent changes and security implementations (like resetting passwords, applying patches, and updating firewall rules). However, applying these fixes does not mean the incident is resolved, as eradication and recovery phases must still follow.
 
-### **Eradication (Eliminate)**
+#### **Eradication (Eliminate)**
 
 - Completely `eliminate the attacker, the root cause, and all remnants` of the incident from the network.
 - `Remove malware`, wipe and rebuild compromised machines, and `restore systems from known-good backups`.
 - `Apply broader security patches` and `execute system-wide hardening` (not just on the infected machines) to prevent reinfection.
 
-### Recovery
+#### Recovery
 
 - The business must confirm that `systems are functioning correctly` and contain intact data before bringing them back into production.
 - Restored systems are subjected to `aggressive logging to watch for suspicious activities` (like unusual logons, unexpected processes, or registry changes), as attackers often try to hit the same targets again.
 - Because recovery can take months, it is typically `split into phases`, starting with immediate **"quick wins" to patch obvious holes**, followed by **permanent, structural changes to improve long-term security**.
 
-## **Post-Incident Activity Stage**
+### **Post-Incident Activity Stage**
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%2014.png)
 
 The goal of this final step is to figure out what went right, what went wrong, and how to improve for next time. A few days after the incident is over, everyone involved gets together for a meeting. They look back at exactly how the attack happened and discuss whether their response actually worked. By learning from these experiences, the team can update their plans and be better prepared to stop future attacks.
 
-### **Reporting**
+#### **Reporting**
 
 - What happened and when?
 - How did the team perform in dealing with the incident in regard to plans, playbooks, policies, and procedures?
@@ -421,9 +421,9 @@ aid in handling the incident efficiently? What can be improved?
 
 → This stage is a great place to train new team members by showing them how the incident was handled by more experienced colleagues
 
-# Incident Analysis and Response
+## Incident Analysis and Response
 
-## **Analysis of Insight Nexus Breach**
+### **Analysis of Insight Nexus Breach**
 
 ![image.png](/assets/img/cdsa/sec1-incident-handling/image%2015.png)
 

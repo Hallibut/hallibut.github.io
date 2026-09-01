@@ -5,9 +5,7 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, ids, ips, snort, suricata]
 ---
 
-# Working with IDS/IPS
-
-# **Introduction To IDS/IPS**
+## **Introduction To IDS/IPS**
 
 **Intrusion Detection Systems (IDS)** and **Intrusion Prevention Systems (IPS)** are critical components of a defense-in-depth network security strategy. While both utilize similar detection methods, their primary functions and network placements differ based on how they handle potential threats.
 
@@ -42,9 +40,9 @@ Because the threat landscape is constantly changing, security teams must proacti
 - **Event Correlation:** By analyzing data from multiple sources, SIEMs can connect the dots between seemingly unrelated events to detect complex, coordinated attacks.
 - **Unified Visibility:** This centralized approach gives security teams a complete picture of the network, enabling faster and more effective incident response.
 
-# Suricata
+## Suricata
 
-## Suricata Fundamentals
+### Suricata Fundamentals
 
 **Suricata** is a highly efficient, open-source network security tool utilized for Intrusion Detection (IDS), Intrusion Prevention (IPS), and Network Security Monitoring (NSM).
 
@@ -53,7 +51,7 @@ Because the threat landscape is constantly changing, security teams must proacti
 - Its effectiveness relies on a *sophisticated set of rules* that guild its analysis and identify potential threats.
 - It is *exceptionally fast and optimized* to run at high speeds on both standard, off-the-shelf hardware and specialized equipment.
 
-### **Suricata Operation Modes**
+#### **Suricata Operation Modes**
 
 Suricata operates in four (4) distinct modes:
 
@@ -64,7 +62,7 @@ Suricata operates in four (4) distinct modes:
 | **Intrusion Detection Prevention System (IDPS)** | Hybrid | Passively monitors traffic but actively transmits RST (reset) packets against abnormal activities. | Strikes a balance between active protection and maintaining low latency. | Requires careful tuning to ensure RST packets effectively disrupt the correct sessions. |
 | **Network Security Monitoring (NSM)** | Dedicated Logger | Logs all encountered network information without performing active/passive analysis or prevention. | Provides a wealth of historical data for retrospective incident investigations. | Generates a very high volume of data to store and manage. |
 
-### **Suricata Inputs**
+#### **Suricata Inputs**
 
 Inputs dictate how Suricata ingests network traffic for inspection. They are divided into two main categories: *Offline* and *Live*.
 
@@ -75,14 +73,14 @@ Inputs dictate how Suricata ingests network traffic for inspection. They are div
 | **Live** | **NFQ (Netfilter Queue)** | A *Linux-specific inline IPS mode* working with `IPTables` to route packets from the kernel for inspection.<br>**Requirement:** Needs active "drop rules" to block malicious packets. |
 | **Live** | **AF_PACKET** | A high-performance, multi-threaded *alternative* to LibPCAP.<br>**Limitation:** *Incompatible with older Linux distributions* and *cannot be used inline* *if the host machine also routes packets*. |
 
-### **Suricata Outputs**
+#### **Suricata Outputs**
 
 Suricata generates various *logs, alerts, and network metadata* (like DNS requests and network flows). The two most notable formats are:
 
 - **EVE (JSON):** The most critical output format. It acts as a comprehensive, JSON-formatted log that **records alerts, drops, and detailed metadata** (HTTP, DNS, TLS, flows). *Because it is JSON, it is easily ingested and analyzed by platforms like Logstash.*
 - **Unified2:** A legacy, Snort-compatible binary alert format. It is primarily used to integrate with other software that relies on Snort's ecosystem and can be read using Snort’s `u2spewfoo` tool.
 
-### **Configuring Suricata & Custom Rules**
+#### **Configuring Suricata & Custom Rules**
 
 we can get an overview of all the rule files by listing `/etc/suricata/rules/`:
 
@@ -225,11 +223,11 @@ $ sudo vim /etc/suricata/suricata.yaml
 
 ![image.png](/assets/img/cdsa/sec9-working-with-ids-ips/image.png)
 
-### **Hands-on With Suricata Inputs**
+#### **Hands-on With Suricata Inputs**
 
 With Suricata inputs, we can experiment with both *offline* and *live* input:
 
-#### #1. With offline input
+##### #1. With offline input
 
 To read network trafffic, we can use **`-r <path/to/file>`** switch
 
@@ -268,7 +266,7 @@ $ suricata -r /home/htb-student/pcaps/suspicious.pcap -k none -l .
 
 **`-l .` (Log Directory):** This flag establish a directory to export log file (`.` mean the current folder)
 
-#### #2. With live input (IDS Mode)
+##### #2. With live input (IDS Mode)
 
 We can try Suricata’s (Live) `LibPCAP` mode
 
@@ -338,7 +336,7 @@ Both `sudo suricata -i ens160` and `sudo suricata --af-packet=ens160` perform th
 
 **The `-i` Flag's Role:** When run on Linux, `-i` automatically defaults to the superior `AF_PACKET` mode. You only need to explicitly use the `--pcap` flag if you specifically want to force Suricata to use the older `LibPCAP` method.
 
-#### #3. For Suricata in Inline (`NFQ`) mode (IPS Mode)
+##### #3. For Suricata in Inline (`NFQ`) mode (IPS Mode)
 
 First we need to establish this `iptables` command
 
@@ -356,7 +354,7 @@ $ sudo suricata -q 0
 5/7/2023 -- 13:52:39 - <Notice> - all 4 packet processing threads, 4 management threads initialized, engine started.
 ```
 
-### **Hands-on With Suricata Outputs**
+#### **Hands-on With Suricata Outputs**
 
 `/var/log/suricata` directory is where Suricata save logs. Among these logs, we find the `eve.json`, `fast.log`, and `stats.log` files.
 
@@ -458,7 +456,7 @@ flow.memuse                                   | Total                     | 7394
 > ![image.png](/assets/img/cdsa/sec9-working-with-ids-ips/image%201.png)
 > 
 
-### **Hands-on With Suricata Outputs - File Extraction**
+#### **Hands-on With Suricata Outputs - File Extraction**
 
 Suricata has **[file extraction](https://docs.suricata.io/en/suricata-6.0.13/file-extraction/file-extraction.html)** feature allows us to capture and store files transferred.
 
@@ -523,7 +521,7 @@ $ sudo xxd <folder_name>/21/21742fc621f83041db2e47b0899f5aea6caa00a4b67dbff0aae8
 
 In this case, the file was a *Windows executable* based on the file's header. More about the MS-DOS EXE format can be found in following resource [MZ](https://wiki.osdev.org/MZ).
 
-### **Live Rule Reloading Feature & Updating Suricata Rulesets**
+#### **Live Rule Reloading Feature & Updating Suricata Rulesets**
 
 Live rule reloading allows us to update our ruleset without interrupting ongoing traffic inspection.
 
@@ -536,7 +534,7 @@ detect-engine:
 
 If is not there, just add it in.
 
-### **Validating Suricata's Configuration**
+#### **Validating Suricata's Configuration**
 
 To validate the configuration, we can use the `-T` option provided by the Suricata command. This command runs a test to check if the configuration file is valid and all files referenced in the configuration are accessible.
 
@@ -547,13 +545,13 @@ $ sudo suricata -T -c /etc/suricata/suricata.yaml
 18/6/2026 -- 12:06:53 - <Notice> - Configuration provided was successfully loaded. Exiting.
 ```
 
-### **Suricata Documentation**
+#### **Suricata Documentation**
 
 [Suricata's documentation](https://docs.suricata.io/)
 
-## Suricata Rule Development Part 1
+### Suricata Rule Development Part 1
 
-### **Suricata Rule Anatomy**
+#### **Suricata Rule Anatomy**
 
 Here is a structure of Suricata rule
 
@@ -561,7 +559,7 @@ Here is a structure of Suricata rule
 action protocol from_ip port -> to_ip port (msg:"Known malicious behavior, possible X malware infection"; content:"some thing"; content:"some other thing"; sid:10000001; rev:1;)
 ```
 
-#### **#1 Core Rule Structure & Components**
+##### **#1 Core Rule Structure & Components**
 
 | **Category** | **Component / Keyword** | **Description** | **Examples / Usage** |
 | --- | --- | --- | --- |
@@ -588,7 +586,7 @@ When you write a new rule yourself, you cannot just pick random `sid` numbers (l
 - **From 1,000,000 to 1,999,999:** The free zone dedicated to **Local rules** (custom/self-written rules). When creating a rule for your company or doing an exercise, you should start picking numbers from 1 million upwards (e.g., `sid:1000001;`).
 - **From 2,000,000 and above:** The zone for professional Rule providers (such as Emerging Threats - ET, Abuse.ch). For example, the rule catching Dridex had the `sid` 2023476, just by seeing that it falls in the 2 million range, you instantly know it was downloaded from a well-known, professional repository.
 
-#### **PCRE (Perl Compatible Regular Expression) Breakdown**
+##### **PCRE (Perl Compatible Regular Expression) Breakdown**
 
 PCRE allows for advanced pattern matching using regular expressions. It should be enclosed in slashes (e.g., `/pattern/flags`) and should generally be used alongside `content` matches for performance.
 
@@ -610,9 +608,9 @@ PCRE allows for advanced pattern matching using regular expressions. It should b
 | **`R`** | **Flag:** Makes the match relative to the previous match. |
 | **`P`** | **Flag:** Inspects the specific HTTP buffer requested (matches with rule buffers like `http_client_body`). |
 
-### **IDS/IPS Rule Development Approaches**
+#### **IDS/IPS Rule Development Approaches**
 
-#### #1. Choosing Your Approach
+##### #1. Choosing Your Approach
 
 - **Signature-based Detection:** You are looking for specific, known evidence of malware.
     - Highly precise for known threats, but bad at catching zero-days.
@@ -624,7 +622,7 @@ PCRE allows for advanced pattern matching using regular expressions. It should b
     - Tracks the state of the connection to identify unexpected deviations.
     - You use the `flow` keyword to **monitor session states**, such as `flow:established, to_server;` (only inspect traffic if a valid connection was already made).
 
-#### #2. The Rule Structure
+##### #2. The Rule Structure
 
 No matter which strategy you chose above, when it's time to write the rule, read it from left to right using this template:
 
@@ -639,13 +637,13 @@ No matter which strategy you chose above, when it's time to write the rule, read
 - **WRITE IT DOWN:** Assign a tracking number.
     - *Example:* `sid:100001; rev:1;`
 
-#### #3. Three Golden Rules for Writing
+##### #3. Three Golden Rules for Writing
 
 1. **Copy and Tweak:** Nobody writes a rule from a blank page. Always find an existing, working rule (like from Emerging Threats) that closely matches your goal. Copy it, then modify the IPs, Ports, and `content` fields to suit your needs.
 2. **Limit the Scope for Performance:** If you force Suricata to blindly scan every byte of every packet, your network will slow down. Always pair your `content` matches with position modifiers like `http_uri`, `http_client_body`, or use `offset` (where to start looking) and `depth` (how far to look).
 3. **Regex is a Last Resort:** PCRE uses a massive amount of CPU. Only use it when standard content matching fails (like finding randomized malware strings). If you *must* use regex, always put a fast, simple `content` match before the `pcre` statement so Suricata can filter out harmless traffic before doing the heavy lifting.
 
-### **Suricata Rule Development Example 1: Detecting PowerShell Empire**
+#### **Suricata Rule Development Example 1: Detecting PowerShell Empire**
 
 The Suricata rule below is designed to detect possible outbound activity from [PowerShell Empire](https://github.com/EmpireProject/Empire), a common post-exploitation framework used by attackers.
 
@@ -653,7 +651,7 @@ The Suricata rule below is designed to detect possible outbound activity from [P
 alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"ET MALWARE Possible PowerShell Empire Activity Outbound"; flow:established,to_server; content:"GET"; http_method; content:"/"; http_uri; depth:1; pcre:"/^(?:login\/process|admin\/get|news)\.php$/RU"; content:"session="; http_cookie; pcre:"/^(?:[A-Z0-9+/]{4})*(?:[A-Z0-9+/]{2}==|[A-Z0-9+/]{3}=|[A-Z0-9+/]{4})$/CRi"; content:"Mozilla|2f|5.0|20 28|Windows|20|NT|20|6.1"; http_user_agent; http_start; content:".php|20|HTTP|2f|1.1|0d 0a|Cookie|3a 20|session="; fast_pattern; http_header_names; content:!"Referer"; content:!"Cache"; content:!"Accept"; sid:2027512; rev:1;)
 ```
 
-### **Suricata Rule Development Example 2: Detecting Covenant**
+#### **Suricata Rule Development Example 2: Detecting Covenant**
 
 ```bash
 alert tcp any any -> $HOME_NET any (msg:"detected by body"; content:"<title>Hello World!</title>"; detection_filter: track by_src, count 4 , seconds 10; priority:1; sid:3000011;)
@@ -663,7 +661,7 @@ alert tcp any any -> $HOME_NET any (msg:"detected by body"; content:"<title>Hell
 
 The (inefficient) Suricata rule above is designed to detect certain variations of [Covenant](https://github.com/cobbr/Covenant), another common post-exploitation framework used by attackers.
 
-### **Suricata Rule Development Example 3: Detecting Covenant (Using Analytics)**
+#### **Suricata Rule Development Example 3: Detecting Covenant (Using Analytics)**
 
 ```bash
 alert tcp $HOME_NET any -> any any (msg:"detected by size and counter"; dsize:312; detection_filter: track by_src, count 3 , seconds 10; priority:1; sid:3000001;)
@@ -671,7 +669,7 @@ alert tcp $HOME_NET any -> any any (msg:"detected by size and counter"; dsize:31
 
 This Suricata rule is designed to generate a high-priority alert if it detects at least three instances of TCP traffic within ten seconds that each contain a data payload of exactly 312 bytes, all originating from the same source IP within our network and headed anywhere.
 
-### **Suricata Rule Development Example 4: Detecting Sliver**
+#### **Suricata Rule Development Example 4: Detecting Sliver**
 
 ```bash
 alert tcp any any -> any any (msg:"Sliver C2 Implant Detected"; content:"POST"; pcre:"/\/(php|api|upload|actions|rest|v1|oauth2callback|authenticate|oauth2|oauth|auth|database|db|namespaces)(.*?)((login|signin|api|samples|rpc|index|admin|register|sign-up)\.php)\?[a-z_]{1,2}=[a-z0-9]{1,10}/i"; sid:1000007; rev:1;)
@@ -681,7 +679,7 @@ alert tcp any any -> any any (msg:"Sliver C2 Implant Detected"; content:"POST"; 
 
 The Suricata rule above is designed to detect certain variations of [Sliver](https://github.com/BishopFox/sliver), yet another common post-exploitation framework used by attackers.
 
-## Suricata Rule Development Part 2 (Encrypted Traffic)
+### Suricata Rule Development Part 2 (Encrypted Traffic)
 
 By examining the plaintext details of SSL/TLS certificates, such as *the issuer* and *domain information*, security systems can identify anomalous or suspicious infrastructure. 
 
@@ -689,7 +687,7 @@ Additionally, utilizing **JA3 fingerprinting** creates *a unique hash from the c
 
 ![image.png](/assets/img/cdsa/sec9-working-with-ids-ips/image%203.png)
 
-### **Suricata Rule Development Example 5: Detecting Dridex (TLS Encrypted)**
+#### **Suricata Rule Development Example 5: Detecting Dridex (TLS Encrypted)**
 
 ```bash
 alert tls $EXTERNAL_NET any -> $HOME_NET any (msg:"ET MALWARE ABUSE.CH SSL Blacklist Malicious SSL certificate detected (Dridex)"; flow:established,from_server; content:"|16|"; content:"|0b|"; within:8; byte_test:3,<,1200,0,relative; content:"|03 02 01 02 02 09 00|"; fast_pattern; content:"|30 09 06 03 55 04 06 13 02|"; distance:0; pcre:"/^[A-Z]{2}/R"; content:"|55 04 07|"; distance:0; content:"|55 04 0a|"; distance:0; pcre:"/^.{2}[A-Z][a-z]{3,}\s(?:[A-Z][a-z]{3,}\s)?(?:[A-Z](?:[A-Za-z]{0,4}?[A-Z]|(?:\.[A-Za-z]){1,3})|[A-Z]?[a-z]+|[a-z](?:\.[A-Za-z]){1,3})\.?[01]/Rs"; content:"|55 04 03|"; distance:0; byte_test:1,>,13,1,relative; content:!"www."; distance:2; within:4; pcre:"/^.{2}(?P<CN>(?:(?:\d?[A-Z]?|[A-Z]?\d?)(?:[a-z]{3,20}|[a-z]{3,6}[0-9_][a-z]{3,6})\.){0,2}?(?:\d?[A-Z]?|[A-Z]?\d?)[a-z]{3,}(?:[0-9_-][a-z]{3,})?\.(?!com|org|net|tv)[a-z]{2,9})[01].*?(?P=CN)[01]/Rs"; content:!"|2a 86 48 86 f7 0d 01 09 01|"; content:!"GoDaddy"; sid:2023476; rev:5;)
@@ -697,7 +695,7 @@ alert tls $EXTERNAL_NET any -> $HOME_NET any (msg:"ET MALWARE ABUSE.CH SSL Black
 
 The rule above triggers an alert upon detecting a TLS session from the **external network** to the **home network**, where the payload of the session contains specific byte patterns and meets several conditions. These patterns and conditions correspond to SSL certificates that have been linked to certain variations of the **Dridex trojan**, as referenced by the SSL blacklist on `abuse.ch`
 
-### **Suricata Rule Development Example 6: Detecting Sliver (TLS Encrypted)**
+#### **Suricata Rule Development Example 6: Detecting Sliver (TLS Encrypted)**
 
 ```bash
 alert tls any any -> any any (msg:"Sliver C2 SSL"; ja3.hash; content:"473cd7cb9faa642487833865d516e578"; sid:1002; rev:1;)
@@ -740,13 +738,13 @@ The JA3 hash can be calculated by using `ja3` tool.
 ---SNIP---
 ```
 
-# Snort
+## Snort
 
-## Snort Fundamentals
+### Snort Fundamentals
 
 Snort is an open-source tool, which serves as both an *Intrusion Detection System (IDS)* and *Intrusion Prevention System (IPS)*, but can also function as a *packet logger or sniffer*, akin to Suricata.
 
-### **Snort Operation Modes**
+#### **Snort Operation Modes**
 
 - Inline IDS/IPS (block traffic)
 - Passive IDS (observe and detect traffic)
@@ -763,7 +761,7 @@ Snort is an open-source tool, which serves as both an *Intrusion Detection Syste
 
 **`afpacket`** is the name of a specific DAQ tool used in Linux. It acts like a special pair of gloves that allows Snort to directly grab, inspect, and drop live network packets as they arrive at the Linux network card.
 
-### **Snort Architecture**
+#### **Snort Architecture**
 
 | **Component** | **Function** | **Input** | **Output** |
 | --- | --- | --- | --- |
@@ -773,7 +771,7 @@ Snort is an open-source tool, which serves as both an *Intrusion Detection Syste
 | **Logging and Alerting System** | *Records events and generates alerts* according to the actions specified in Snort rules. | Events generated by the Detection Engine. | Log entries and security alerts. |
 | **Output Modules** | Determine how and where logs and alerts are stored or transmitted.<br>**Configured in `snort.lua`.** | Alerts and log data from the Logging and Alerting System. | Output to `syslog`, `unified2 files`, `databases`, or other configured destinations. |
 
-### **Snort Configuration & Validating Snort's Configuration**
+#### **Snort Configuration & Validating Snort's Configuration**
 
 | **Section** | **Role in the Security Pipeline** |
 | --- | --- |
@@ -789,7 +787,7 @@ Snort is an open-source tool, which serves as both an *Intrusion Detection Syste
 - **`snort_defaults.lua`**: Contains predefined paths (like where rules are stored) and standard variables. (Don't edit this file directly → leave it as your baseline.)
 - **`snort.lua`**: You use this file to override the defaults and implement your specific security policy.
 
-#### Pro-Tips
+##### Pro-Tips
 
 1. **Test Before You Run:** Never restart your production service without validating your config first. Use the `T` flag to check for syntax errors:
     
@@ -1015,7 +1013,7 @@ o")~   Snort exiting
 
 `-c` for configuration. 
 
-### **Snort Inputs**
+#### **Snort Inputs**
 
 Use `.pcap` file with `-r`: 
 
@@ -1266,7 +1264,7 @@ o")~   Snort exiting
 
 ```
 
-### **Snort Rules**
+#### **Snort Rules**
 
 Snort rules, kinda like Suricata rules.
 
@@ -1288,9 +1286,9 @@ Here, `include = '/home/htb-student/local.rules'` means "when Snort starts, load
 - **Use `-R`** followed by a file path if you want to load just **one specific** rules file.
 - **Use `-rule-path`** followed by a folder path if you want to load **every** rules file inside that folder at once.
 
-### **Snort Outputs**
+#### **Snort Outputs**
 
-#### **#1. Basic Statistics**
+##### **#1. Basic Statistics**
 
 When Snort finishes running, it outputs a summary report broken down into four key areas:
 
@@ -1299,7 +1297,7 @@ When Snort finishes running, it outputs a summary report broken down into four k
 - **File Statistics:** A breakdown of analyzed files by type, size in bytes, and matching signatures.
 - **Summary Statistics:** Overall performance metrics, including total runtime and processing speed (packets per second).
 
-#### **#2. Alert Outputs**
+##### **#2. Alert Outputs**
 
 To actually see detection events triggered by your rules, you must explicitly enable alerting using the `-A` flag. Snort supports multiple alert formats depending on your needs:
 
@@ -1307,16 +1305,16 @@ To actually see detection events triggered by your rules, you must explicitly en
 - **`-A u2` (unified2)**: Logs events in a binary format intended for later analysis by other security tools.
 - **`-A csv`**: Outputs alerts in a comma-separated format, which is highly customizable and easy to parse.
 
-#### **#3. Performance Monitoring**
+##### **#3. Performance Monitoring**
 
 For deeper system tuning, Snort offers extra modules:
 
 - **`perf_monitor`**: Captures real-time performance data without stopping Snort, which can be sent to external monitoring tools.
 - **`profiler`**: Tracks how much time and memory specific rules and modules are consuming, helping you optimize Snort's performance.
 
-## Snort Rule Development
+### Snort Rule Development
 
-### **Snort Rule Development Example 1: Detecting Ursnif (Inefficiently)**
+#### **Snort Rule Development Example 1: Detecting Ursnif (Inefficiently)**
 
 ```bash
 alert tcp any any -> any any (msg:"Possible Ursnif C2 Activity"; flow:established,to_server; content:"/images/", depth 12; content:"_2F"; content:"_2B"; content:"User-Agent|3a 20|Mozilla/4.0 (compatible|3b| MSIE 8.0|3b| Windows NT"; content:!"Accept"; content:!"Cookie|3a|"; content:!"Referer|3a|"; sid:1000002; rev:1;)
@@ -1557,7 +1555,7 @@ timing
 o")~   Snort exiting
 ```
 
-### **Snort Rule Development Example 2: Detecting Cerber**
+#### **Snort Rule Development Example 2: Detecting Cerber**
 
 ```jsx
 alert udp $HOME_NET any -> $EXTERNAL_NET any (msg:"Possible Cerber Check-in"; dsize:9; content:"hi", depth 2, fast_pattern; pcre:"/^[af0-9]{7}$/R"; detection_filter:track by_src, count 1, seconds 60; sid:2816763; rev:4;)
@@ -1783,7 +1781,7 @@ timing
 o")~   Snort exiting
 ```
 
-### **Snort Rule Development Example 3: Detecting Patchwork**
+#### **Snort Rule Development Example 3: Detecting Patchwork**
 
 ```jsx
 alert http $HOME_NET any -> $EXTERNAL_NET any (msg:"OISF TROJAN Targeted AutoIt FileStealer/Downloader CnC Beacon"; flow:established,to_server; http_method; content:"POST"; http_uri; content:".php?profile="; http_client_body; content:"ddager=", depth 7; http_client_body; content:"&r1=", distance 0; http_header; content:!"Accept"; http_header; content:!"Referer|3a|"; sid:10000006; rev:1;)
@@ -2066,7 +2064,7 @@ timing
 o")~   Snort exiting
 ```
 
-### **Snort Rule Development Example 4: Detecting Patchwork (SSL)**
+#### **Snort Rule Development Example 4: Detecting Patchwork (SSL)**
 
 ```jsx
 alert tcp $EXTERNAL_NET any -> $HOME_NET any (msg:"Patchwork SSL Cert Detected"; flow:established,from_server; content:"|55 04 03|"; content:"|08|toigetgf", distance 1, within 9; classtype:trojan-activity; sid:10000008; rev:1;)
@@ -2420,13 +2418,13 @@ timing
 o")~   Snort exiting
 ```
 
-# Zeek
+## Zeek
 
-## **Zeek Fundamentals**
+### **Zeek Fundamentals**
 
 Zeek is an open-source network analysis tool. It is also a tool for troubleshooting network issues and performing measurements. 'Zeek' sounds quite similar to 'Seek'. Initially, this software was named 'Bro'. Zeek uses a Scripting Language instead of the rules used by Suricata and Snort.
 
-## **Zeek's Operation Modes**
+### **Zeek's Operation Modes**
 
 Zeek operates in the following modes:
 
@@ -2435,7 +2433,7 @@ Zeek operates in the following modes:
 - Real-time and offline (e.g., PCAP-based) analysis
 - Cluster support for large-scale deployments
 
-## **Zeek's Architecture**
+### **Zeek's Architecture**
 
 Zeek's architecture consists of two phases.
 
@@ -2445,7 +2443,7 @@ These event reports are then automatically queued and forwarded to the second co
 
 Most of Zeek's events are defined in `.bif` files located in the `/scripts/base/bif/plugins/` directory. [[Ref]](https://docs.zeek.org/en/stable/scripts/base/bif/)
 
-## **Zeek Logs**
+### **Zeek Logs**
 
 Among the diverse array of logs Zeek produces, some familiar ones include:
 
@@ -2461,9 +2459,9 @@ Zeek, in its standard configuration, applies gzip compression to log files every
 
 Zeek also provides a specialized tool known as `zeek-cut` for handling log files.
 
-## Intrusion Detect ith Zeek
+### Intrusion Detect ith Zeek
 
-### **Intrusion Detection With Zeek Example 1: Detecting Beaconing Malware**
+#### **Intrusion Detection With Zeek Example 1: Detecting Beaconing Malware**
 
 Beaconing is a process by which malware communicates with its command and control (C2) server to receive instructions or exfiltrate data.
 
@@ -2538,7 +2536,7 @@ If we look carefully enough we will notice connections being made to `51.15.197
 
 The `psempire.pcap` file, which is located in the `/home/htb-student/pcaps` directory includes traffic related to PowerShell Empire. PowerShell Empire indeed beacons every 5 seconds in its default configuration.
 
-### **Intrusion Detection With Zeek Example 2: Detecting DNS Exfiltration**
+#### **Intrusion Detection With Zeek Example 2: Detecting DNS Exfiltration**
 
 Zeek is also useful when we suspect data exfiltration. Data exfiltration can be difficult to detect as it often mimics normal network traffic. However, with Zeek, we can analyze our network traffic at a deeper level.
 
@@ -2740,7 +2738,7 @@ post.1dbcb3f1b.37467121d5.456c54f2.blue.letsgohunt.online
 
 Upon close inspection, it becomes evident that the domain `letsgohunt.online` possesses a significant number of subdomains, similar to cloud providers. However, it's worth noting that interactions with dozens or even hundreds of subdomains are generally not considered typical behavior.
 
-### **Intrusion Detection With Zeek Example 3: Detecting TLS Exfiltration**
+#### **Intrusion Detection With Zeek Example 3: Detecting TLS Exfiltration**
 
 Let's now go over an example of detecting data exfiltration over TLS.
 
@@ -2813,7 +2811,7 @@ $ cat conn.log | /usr/local/zeek/bin/zeek-cut id.orig_h id.resp_h orig_bytes | s
 
 ```
 
-### **Intrusion Detection With Zeek Example 4: Detecting PsExec**
+#### **Intrusion Detection With Zeek Example 4: Detecting PsExec**
 
 **PsExec**, a part of the Sysinternals Suite, is frequently used for remote administration within Active Directory environments.
 

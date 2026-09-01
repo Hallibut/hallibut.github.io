@@ -5,11 +5,9 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 ---
 
-# Introduction to Threat Hunting & Hunting With Elastic
+## Threat Hunting Fundamentals
 
-# Threat Hunting Fundamentals
-
-## Threat Hunting Definition
+### Threat Hunting Definition
 
 - The average time from when a system is compromised until it is detected is called **dwell time**, which often lasts from a few weeks to several months.
 - The core objective of the Threat Hunting process is to minimize **dwell time** by detecting threats at an early stage of the **cyber kill chain**, preventing attackers from establishing a foothold in the infrastructure.
@@ -19,7 +17,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - Practitioners must possess **cognitive empathy** with attackers to understand their mindset, along with a deep understanding of the organization's network topology and digital assets.
 - This activity strictly requires using highly reliable data sources combined with advanced tactical analysis platforms.
 
-## The Relationship Between Incident Handling & Threat Hunting
+### The Relationship Between Incident Handling & Threat Hunting
 
 - The **Preparation Phase** requires establishing clear **Rules of Engagement** to determine whether to build an independent operational process or integrate it directly into existing incident response policies.
 - During the **Detection & Analysis Phase**, the hunting team uses an offensive mindset to help verify **Indicators of Compromise (IoCs)** and uncover artifacts that might have been missed.
@@ -27,26 +25,26 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - During the **Post-Incident Activity Phase**, experts contribute their technical expertise to propose improvements and comprehensively strengthen the system's **security posture**.
 - The decision to merge or separate these two processes depends entirely on the specific risk context and resources of each organization.
 
-## A Threat Hunting Team's Structure
+### A Threat Hunting Team's Structure
 
-### Core & Analytical Roles
+#### Core & Analytical Roles
 
 - The core force of the team consists of **Threat Hunters** who deeply understand **TTPs** and proactively hunt for **IoCs** through specialized platforms.
 - The task of gathering intelligence from open-source resources or the dark web to forecast attack trends is handled by the **Threat Intelligence Analyst**.
 - Processing massive datasets using statistical models and Machine Learning to uncover hidden patterns is the responsibility of **Data Analysts/Scientists**.
 
-### Response & Forensics Roles
+#### Response & Forensics Roles
 
 - **Incident Responders** will immediately take over upon detecting a threat to investigate, contain, eradicate, and recover the system.
 - **Forensics Experts** specializing in **DFIR (Digital Forensics and Incident Response)** will directly analyze malware, reverse-engineer code, and draft detailed technical reports.
 
-### Engineering & Management Roles
+#### Engineering & Management Roles
 
 - The entire security infrastructure and defensive tools aligned with the kill-chain are designed and operated by **Security Engineers/Architects**.
 - Monitoring behavior and rapidly detecting anomalies in network traffic falls under the expertise of the **Network Security Analyst**.
 - Overseeing operations, coordinating team members, and ensuring seamless communication within the security operations center is the responsibility of the **SOC Manager**.
 
-## When Should We Hunt?
+### When Should We Hunt?
 
 - A hunting campaign should be triggered immediately whenever there is **new intelligence** regarding an attack group or vulnerabilities directly related to the systems currently in use.
 - The security team must act when there are **new IoCs** belonging to APT groups with a history of targeting the organization or similar targets in the same industry.
@@ -54,7 +52,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - The hunting process must always run concurrently with **incident response (IR) activities** to determine the full scope of infection and any hiding threats.
 - Organizations need to maintain **periodic and continuous hunting** campaigns to proactively detect hidden risks that slip through standard security filters.
 
-## The Relationship Between Risk Assessment & Threat Hunting
+### The Relationship Between Risk Assessment & Threat Hunting
 
 - The **Risk Assessment** process provides a comprehensive view of attack vectors, helping organizations allocate hunting efforts towards the most critical areas.
 - Risk assessment data helps direct security resources to the most important assets, also known as the **crown jewels** of the system.
@@ -64,7 +62,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - The results of risk analysis play a backbone role in improving incident response plans (**IR plans**) and upgrading cybersecurity control measures.
 - Hunting activities are often optimized by integrating vulnerability scanning platforms and **SIEM (Security Information and Event Management)** systems for centralized event correlation.
 
-# The Threat Hunting Process
+## The Threat Hunting Process
 
 - The initial **Setting the Stage** phase requires enabling comprehensive logging systems across **SIEM**, **EDR**, and **IDS** tools, along with thoroughly analyzing intelligence reports to grasp the attacker's **TTPs** to pinpoint the critical assets that must be protected.
 - The next step is **Formulating Hypotheses** by constructing practical and testable hypotheses based on intelligence information, security alerts, or professional experience to guide the areas that need to be swept.
@@ -75,9 +73,9 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - The **After the Hunt** phase requires documenting the entire process, updating newly discovered **IoCs** into the intelligence platform, and optimizing **incident response playbooks**.
 - The essence of hunting activities is a cycle of **Continuous Learning and Enhancement**, constantly refining tools, machine learning algorithms, and methodologies based on learned lessons and the ever-changing risk landscape.
 
-# Threat Hunting Glossary
+## Threat Hunting Glossary
 
-## Threat Actors & Core Concepts
+### Threat Actors & Core Concepts
 
 - An **Adversary** in **Cyber Threat Intelligence (CTI)** is an unauthorized entity seeking to infiltrate the infrastructure for financial gain, stealing internal information, or intellectual property.
 - These threat actors are classified into various specific groups such as cybercriminals, insider threats, hacktivists, or government-sponsored espionage units.
@@ -88,14 +86,14 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 
 ![image.png](/assets/img/cdsa/sec4-intro-to-threat-hunting-elastic/image.png)
 
-## Tactics, Techniques, and Procedures (TTPs)
+### Tactics, Techniques, and Procedures (TTPs)
 
 - The term **TTPs** represents distinctive activity patterns, acting as a campaign "signature" of a specific attack group.
 - **Tactics** describe strategic objectives and high-level operational concepts, answering "why" the attacker performs that action.
 - The specific methods used to achieve tactical goals are called **Techniques**, providing an overview of "how" it is executed.
 - The most detailed, step-by-step, and micro-level instructions to execute a technique are defined as **Procedures**.
 
-## Indicators of Compromise & The Pyramid of Pain
+### Indicators of Compromise & The Pyramid of Pain
 
 ![image.png](/assets/img/cdsa/sec4-intro-to-threat-hunting-elastic/image%201.png)
 
@@ -112,7 +110,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - The **Tools** group includes software, malware, or C2 frameworks used by the attacker; detecting a tool forces them to rewrite their code at a high cost.
 - At the top of the pyramid are **TTPs**, which are the most valuable indicators and cost the attacker the most time and effort to completely change their operational methods if exposed.
 
-## The Diamond Model of Intrusion Analysis
+### The Diamond Model of Intrusion Analysis
 
 ![image.png](/assets/img/cdsa/sec4-intro-to-threat-hunting-elastic/image%203.png)
 
@@ -124,9 +122,9 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - Compared to the Cyber Kill Chain, which solely focuses on linear attack phases, the **Diamond Model** offers a more comprehensive view of the intrusion ecosystem and its tightly knit interactive links.
 - In practice, when analyzing a phishing campaign distributing a banking trojan, the financial institution is the **Victim**, the criminal group is the **Adversary**, the fraudulent email acts as the **Capability**, and the intermediary botnet is the **Infrastructure**.
 
-# Threat Intelligence Fundamentals
+## Threat Intelligence Fundamentals
 
-## Cyber Threat Intelligence Definition
+### Cyber Threat Intelligence Definition
 
 - The core objective of **Cyber Threat Intelligence (CTI)** is to transition an organization's defensive strategy from a passive state to proactive forecasting, thereby providing essential intelligence for the **Security Operations Center (SOC)**.
 - Intelligence information only truly delivers value when it ensures **Relevance**, preventing the waste of resources on risks that do not affect the current infrastructure.
@@ -135,13 +133,13 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - Prior to distribution, intelligence must be rigorously verified for **Accuracy** along with specific confidence levels to avoid false alarms or wasting resources on misleading tactics.
 - The convergence of these four elements helps an organization understand attack campaigns, unmask an adversary's **TTPs**, and support leadership in making effective strategic business decisions.
 
-## The Difference Between Threat Intelligence & Threat Hunting
+### The Difference Between Threat Intelligence & Threat Hunting
 
 - **Threat Intelligence** activities are predictive, focusing on anticipating the location, time, operational strategy, and ultimate goal of the attacker.
 - Conversely, **Threat Hunting** combines both **Reactive and Proactive** aspects, typically triggered by a suspicious sign to determine whether an attacker is lurking or has previously been present in the network.
 - These two fields share a tight symbiotic relationship; intelligence profiles help steer hunting campaigns, while results from hunting provide factual data to refine the accuracy of intelligence reports.
 
-## Criteria Of Cyber Threat Intelligence & Intelligence Types
+### Criteria Of Cyber Threat Intelligence & Intelligence Types
 
 - The collection and analysis of high-quality **CTI** helps leadership understand risks, build incident response plans, and is categorized into three closely intersecting levels.
 - **Strategic Intelligence** is tailored specifically for senior leadership (C-suite), focusing on answering the **Who?** and **Why?** by linking intelligence with enterprise risks and outlining long-term attack trends.
@@ -149,7 +147,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, threat-hunting, elastic]
 - **Tactical Intelligence** provides immediate technical data such as **Indicators of Compromise (IOCs)** to network defense teams to rapidly detect and prevent specific technical threats.
 - These three types of intelligence do not operate independently; tactical information constantly contributes to shaping the operational campaign picture and vice versa, forming a comprehensive intelligence ecosystem.
 
-## How To Go Through A Tactical Threat Intelligence Report
+### How To Go Through A Tactical Threat Intelligence Report
 
 - The first step is **Comprehending the Report's Scope and Narrative** to grasp the macro context, the attacker's objective, and to evaluate the campaign's relevance to the organization's industry.
 - Next is **Spotting and Classifying the IOCs** into distinct groups such as Network-based (IP, domain), Host-based (hash, registry), and Email-based for easy systematization and defense implementation.

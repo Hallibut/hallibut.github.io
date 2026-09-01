@@ -5,11 +5,11 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, windows, event-logs]
 ---
 
-# **Introduction**
+## **Introduction**
 
-## **Windows Event Logs**
+### **Windows Event Logs**
 
-### **Windows Event Logging Basics**
+#### **Windows Event Logging Basics**
 
 `Windows Event Logs` are an intrinsic part of the Windows Operating System.
 
@@ -29,9 +29,9 @@ The logs are categorized into different event logs. The default Windows event lo
 
 ![image.png](/assets/img/cdsa/sec3-windows-event-logs-finding-evil/image%201.png)
 
-### **The Anatomy of an Event Log**
+#### **The Anatomy of an Event Log**
 
-#### #1 `Application` logs
+##### #1 `Application` logs
 
 When examining `Application` logs, we encounter two distinct levels of events: `information` and `error`.
 
@@ -66,7 +66,7 @@ we can extract supplementary information from the event log, such as the process
 
 ![image.png](/assets/img/cdsa/sec3-windows-event-logs-finding-evil/image%205.png)
 
-#### #2 `Security` logs
+##### #2 `Security` logs
 
 Let's consider [event ID 4624](https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624), This event generates when a logon session is created (on destination machine). It generates on the computer that was accessed, where the session was created.
 
@@ -74,7 +74,7 @@ Let's consider [event ID 4624](https://docs.microsoft.com/en-us/windows/security
 
 Within this log, we find crucial details like "`Logon ID`" (one and only identification code for the logon session), which allows us to correlate this logon with other events sharing the same "`Logon ID`" 
 
-### **Leveraging Custom XML Queries**
+#### **Leveraging Custom XML Queries**
 
 By navigating to "**Filter Current Log" -> "XML" -> "Edit Query Manually**", we can [**create custom XML queries**](https://www.w3schools.com/xml/XPath_intro.asp) to identify related events using the "Logon ID”
 
@@ -105,7 +105,7 @@ Analyzing the special logon event, we gain insights into token permissions grant
 A comprehensive list of privileges can be found in the documentation on [privilege constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/privilege-constants). For instance, the "`SeDebugPrivilege`" privilege indicates that the user 
 possesses the ability to tamper with memory that does not belong to them.
 
-### **Useful Windows Event Logs**
+#### **Useful Windows Event Logs**
 
 | **Log Type** | **Event ID** | **Event Name** | **Description** |
 | --- | --- | --- | --- |
@@ -138,9 +138,9 @@ possesses the ability to tamper with memory that does not belong to them.
 | **Security Logs** | 5157 | The Windows Filtering Platform has blocked a connection | Logged when a connection attempt is blocked. Helpful for identifying malicious traffic on your network. |
 | **Security Logs** | 7045 | A service was installed in the system | A sudden appearance of unknown services might suggest malware installation, as many types install themselves as services. |
 
-## **Analyzing Evil With Sysmon & Event Logs**
+### **Analyzing Evil With Sysmon & Event Logs**
 
-### **Sysmon Basics**
+#### **Sysmon Basics**
 
 `System Monitor (Sysmon)` is a **Windows system service** and **device driver** that remains resident across system reboots to monitor and log system activity to the Windows event log. 
 
@@ -183,7 +183,7 @@ C:\Tools\Sysmon> sysmon.exe -c <filename.xml>
 
 ***Note**: It should be noted that [Sysmon for Linux](https://github.com/Sysinternals/SysmonForLinux) also exists.*
 
-### **Detection Example 1: Detecting DLL Hijacking**
+#### **Detection Example 1: Detecting DLL Hijacking**
 
 To detect a DLL hijack, we need to focus on `Event Type 7`, which corresponds to module load events (whenever process A load library B).
 
@@ -235,7 +235,7 @@ Now, we can observe several indicators of compromise (IOCs) to create effective 
 - **Abnormal `WININET.dll` Loading:** `calc.exe` should only load `WININET.dll` directly from `System32`. If `calc.exe` loads it from *anywhere* else, you can confidently flag it as a DLL hijack.
 - **Missing Digital Signature:** The legitimate Microsoft `WININET.dll` is officially signed. The malicious, injected DLL will be completely unsigned.
 
-### **Detection Example 2: Detecting Unmanaged PowerShell/C-Sharp Injection**
+#### **Detection Example 2: Detecting Unmanaged PowerShell/C-Sharp Injection**
 
 **C#** is a *managed language* that compiles into **bytecode** rather than direct assembly. It strictly requires the **Common Language Runtime (CLR)** to process and execute its code.
 
@@ -286,7 +286,7 @@ Additionally, by referring to both the related "Modules" tab of Process Hacker a
 
 ![image.png](/assets/img/cdsa/sec3-windows-event-logs-finding-evil/image%2027.png)
 
-### **Detection Example 3: Detecting Credential Dumping**
+#### **Detection Example 3: Detecting Credential Dumping**
 
 Another critical aspect of cybersecurity is detecting credential dumping activities.
 
@@ -348,11 +348,11 @@ Some Indicators of Compromise (IOCs) to look for when hunting for *credential du
 - **Privilege Escalation:** The process requests `SeDebugPrivileges`, a high-level debugging permission required by Mimikatz to interact with LSASS.
 - **Legitimate Exceptions:** Be aware of false positives; legitimate security software (AV/EDR) and normal authentication processes also require access to LSASS.
 
-# **Additional Telemetry Sources**
+## **Additional Telemetry Sources**
 
-## **Event Tracing for Windows (ETW)**
+### **Event Tracing for Windows (ETW)**
 
-### **What is ETW?**
+#### **What is ETW?**
 
 **Event Tracing for Windows (ETW)** is a high-speed, deeply embedded logging and telemetry feature in the Windows operating system. It captures real-time activities from both user-level applications and the system kernel.
 
@@ -361,7 +361,7 @@ Some Indicators of Compromise (IOCs) to look for when hunting for *credential du
 - It is designed to be lightweight. Administrators can selectively enable specific providers to gather necessary security data without dragging down system performance.
 - The data generated by ETW is easily retrieved, filtered, and analyzed using standard utilities like PowerShell (via the `Get-WinEvent` cmdlet) and Microsoft's Message Analyzer.
 
-### **ETW Architecture & Components**
+#### **ETW Architecture & Components**
 
 The underlying architecture and the key components of Event Tracing for Windows (ETW) are illustrated in the following diagram from [Microsoft](https://web.archive.org/web/20200725154736/https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/part-1-etw-introduction-and-overview).
 
@@ -377,7 +377,7 @@ The underlying architecture and the key components of Event Tracing for Windows 
 - **Channels:** Logical filters that group events based on purpose or importance. Consumers subscribe to specific channels to get exactly what they need. *(Note: An event must have a Channel property to be recorded in the standard event log).*
 - **ETL Files (Event Trace Logs):** The default storage mechanism. If events aren't processed dynamically, they are written to disk as `.ETL` files for long-term storage, offline analysis, and forensic investigations.
 
-### **Interacting With ETW**
+#### **Interacting With ETW**
 
 **Logman (`logman.exe`)** is a built-in Windows command-line tool used to manage ETW. It allows administrators and incident responders to create, start, stop, and investigate event tracing sessions and their associated providers.
 
@@ -398,9 +398,9 @@ For those who prefer not to use the command line, ETW can also be managed visual
 
 ![image.png](/assets/img/cdsa/sec3-windows-event-logs-finding-evil/image%2033.png)
 
-### **Useful Providers**
+#### **Useful Providers**
 
-#### **Core System & Kernel Visibility**
+##### **Core System & Kernel Visibility**
 
 These providers are your ground truth for low-level operating system behavior.
 
@@ -409,7 +409,7 @@ These providers are your ground truth for low-level operating system behavior.
 - **Microsoft-Windows-Kernel-Registry:** Watches registry modifications. Essential for finding newly established persistence mechanisms or malicious configuration changes.
 - **Microsoft-Windows-Kernel-Network:** Provides kernel-level network telemetry to spot reverse shells, command and control (C2) beacons, and general network-based attacks.
 
-#### **Network & Remote Access**
+##### **Network & Remote Access**
 
 These providers monitor the pathways attackers use to move through a network or establish remote access.
 
@@ -419,14 +419,14 @@ These providers monitor the pathways attackers use to move through a network or 
 - **OpenSSH & Microsoft-Windows-VPN-Client:** Tracks standard remote access methods. Useful for catching brute-force SSH attempts or rogue VPN connections.
 - **Microsoft-Windows-DNS-Client:** Monitors domain name resolution. Vital for catching DNS tunneling or abnormal lookups associated with C2 infrastructure.
 
-#### **Execution & Application Layer**
+##### **Execution & Application Layer**
 
 These providers watch the engines that actually execute code, making them prime targets for catching "living off the land" (LotL) techniques.
 
 - **Microsoft-Windows-PowerShell:** An absolute must for tracking malicious scripting, heavily utilized for script block logging and spotting obfuscated commands.
 - **Microsoft-Windows-DotNETRuntime:** Monitors .NET execution. Essential for catching malicious .NET assembly loading or memory-resident malware frameworks (like Cobalt Strike).
 
-#### **Security Controls & Antivirus**
+##### **Security Controls & Antivirus**
 
 These providers monitor the health of the system's defenses to tell you if an attacker is trying to blind your security tools.
 
@@ -434,9 +434,9 @@ These providers monitor the health of the system's defenses to tell you if an at
 - **Microsoft-Windows-Security-Mitigations:** Tracks the effectiveness of OS-level exploit protections to flag active bypass attempts.
 - **Microsoft-Antimalware-Service & Protection:** Monitors the AV engine itself. Alerts you if an attacker disables real-time protection, alters scan exclusions, or employs AV-evasion tactics.
 
-### **Restricted Providers**
+#### **Restricted Providers**
 
-#### **The Threat Intelligence Provider**
+##### **The Threat Intelligence Provider**
 
 The prime example is **`Microsoft-Windows-Threat-Intelligence`**. It is a high-value provider heavily utilized in Digital Forensics and Incident Response (DFIR) because it captures incredibly granular telemetry. This allows defenders to:
 
@@ -444,26 +444,26 @@ The prime example is **`Microsoft-Windows-Threat-Intelligence`**. It is a high-v
 - Track the exact origin of a threat, its lateral movements, and the specific alterations it made to the system.
 - Monitor activity in real-time to intervene before damage occurs.
 
-#### **Access Requirements (PPL & ELAM)**
+##### **Access Requirements (PPL & ELAM)**
 
 Because the data is so powerful, a process cannot simply request access to it. It must run as a **Protected Process Light (PPL)**.
 
 - **The Official Route:** Legitimate anti-malware vendors must go through a rigorous, non-trivial process with Microsoft. This involves signing legal documents, building an **Early Launch Anti-Malware (ELAM)** driver, passing a test suite, and obtaining a special Authenticode signature.
 - **The Unofficial Route:** While the official barrier to entry is high, workarounds do exist that allow unauthorized access to this provider.
 
-## **Tapping Into ETW**
+### **Tapping Into ETW**
 
-### **Detection Example 1: Detecting Strange Parent-Child Relationships**
+#### **Detection Example 1: Detecting Strange Parent-Child Relationships**
 
-### **Detection Example 2: Detecting Malicious .NET Assembly Loading**
+#### **Detection Example 2: Detecting Malicious .NET Assembly Loading**
 
-# **Analyzing Windows Event Logs En Masse**
+## **Analyzing Windows Event Logs En Masse**
 
-## Get-WinEvent
+### Get-WinEvent
 
 PowerShell's `Get-WinEvent` cmdlet use in terminal to help us access all kind of log we just mention early.
 
-### **Using Get-WinEvent**
+#### **Using Get-WinEvent**
 
 Running `Get-WinEvent -ListLog *` retrieves a complete, unfiltered list of all available event logs on the system.
 
@@ -538,7 +538,7 @@ Microsoft-Windows-FirstUX-PerfInstrumentation                              {Firs
 
 At its most basic, Get-WinEvent retrieves event logs from local or remote computers. 
 
-#### #1 **Retrieving events from the System log**
+##### #1 **Retrieving events from the System log**
 
 ```powershell
 PS C:\Users\Administrator> Get-WinEvent -LogName 'System' -MaxEvents 50 | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize
@@ -569,7 +569,7 @@ TimeCreated            Id ProviderName                             LevelDisplayN
 --- SNIP ---
 ```
 
-#### **#2 Retrieving events from Microsoft-Windows-WinRM/Operational**
+##### **#2 Retrieving events from Microsoft-Windows-WinRM/Operational**
 
 ```powershell
 PS C:\Users\Administrator> Get-WinEvent -LogName 'Microsoft-Windows-WinRM/Operational' -MaxEvents 30 | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize
@@ -599,7 +599,7 @@ TimeCreated           Id ProviderName            LevelDisplayName Message
 8/3/2022 9:51:07 AM  254 Microsoft-Windows-WinRM Information      Activity Transfer
 ```
 
-#### #3 **Retrieving events from .evtx Files**
+##### #3 **Retrieving events from .evtx Files**
 
 If you have an exported `.evtx` file from another computer or you have backed up an existing log, you can utilize the Get-WinEvent cmdlet to read and query those logs. This capability is particularly 
 useful for auditing purposes or when you need to analyze logs within scripts.
@@ -618,7 +618,7 @@ TimeCreated           Id ProviderName             LevelDisplayName Message
 
 By specifying the path of the log file using the `-Path` parameter, we can retrieve events from that specific file. The command selects relevant properties and formats the output for easier analysis, displaying the event's creation time, ID, provider name, level display name, and message.
 
-#### #4 **Filtering events with FilterHashtable**
+##### #4 **Filtering events with FilterHashtable**
 
 To filter Windows event logs, we can use the `-FilterHashtable` parameter, which enables us to define specific conditions for the logs we want to retrieve.
 
@@ -677,7 +677,7 @@ If we want the get event logs based on a date range (`5/28/23 - 6/2/2023`), this
 
 ***Note**: The above will filter between the start date inclusive and the end date exclusive. That's why we specified June 3rd and not 2nd.*
 
-#### #5 **Filtering events with FilterHashtable & XML**
+##### #5 **Filtering events with FilterHashtable & XML**
 
 Consider an intrusion detection scenario where a suspicious network connection to a particular IP (`52.113.194.132`) has been identified. With Sysmon installed, you can use [Event ID 3 (Network Connection)](https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/event.aspx?eventid=90003) logs to investigate the potential threat.
 
@@ -757,7 +757,7 @@ User: DESKTOP-NU10MTO\Administrator
 --- SNIP ---
 ```
 
-#### #6 **Filtering events with FilterXPath**
+##### #6 **Filtering events with FilterXPath**
 
 To use XPath queries with Get-WinEvent, we need to use the `-FilterXPath` parameter. This allows us to craft an XPath query to filter the event logs.
 
@@ -791,7 +791,7 @@ TimeCreated                      Id LevelDisplayName Message
 5/29/2023 12:32:05 AM             3 Information      Network connection detected:...
 ```
 
-#### #7 **Filtering events based on property values**
+##### #7 **Filtering events based on property values**
 
 The `-Property *` parameter, when used with `Select-Object`, instructs the command to select all properties of the objects passed to it. In the context of the Get-WinEvent command, these properties will include all available information about the event. Let's see an example that will present us with all properties of Sysmon event ID 1 logs.
 

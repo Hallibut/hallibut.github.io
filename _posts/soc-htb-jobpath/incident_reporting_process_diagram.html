@@ -1,0 +1,136 @@
+<style>
+    .flowchart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 2rem 0;
+        font-family: inherit;
+    }
+    .flowchart-step {
+        background: var(--card-bg, rgba(0, 0, 0, 0.35));
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid var(--tb-border-color, rgba(255, 255, 255, 0.1));
+        border-top: 4px solid var(--link-color);
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        width: 100%;
+        max-width: 650px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .flowchart-step:hover {
+        transform: translateY(-3px);
+        border-color: var(--link-color);
+        background: var(--card-hover-bg, rgba(0, 0, 0, 0.45));
+    }
+    .flowchart-step-number {
+        display: inline-block;
+        background: var(--link-color);
+        color: var(--main-bg, #111);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .flowchart-step .step-title {
+        margin: 0 0 0.5rem 0;
+        color: var(--heading-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: block;
+    }
+    .flowchart-step p {
+        margin: 0;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .flowchart-connector {
+        height: 35px;
+        width: 2px;
+        background-color: var(--link-color);
+        position: relative;
+        margin: 0.25rem 0;
+        opacity: 0.6;
+    }
+    /* The downward arrow head */
+    .flowchart-connector::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: -4px;
+        border-width: 6px 5px 0 5px;
+        border-style: solid;
+        border-color: var(--link-color) transparent transparent transparent;
+    }
+</style>
+
+<div class="flowchart-container">
+    <!-- Step 1 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 1</span>
+        <div class="step-title">Initial Detection & Acknowledgement</div>
+        <p>Formally recognize the incident before reporting begins. Detection can happen through human observation, automated security tools, or directly from the threat actor.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 2 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 2</span>
+        <div class="step-title">Preliminary Analysis</div>
+        <p>Assess the scope and determine the potential blast radius of the incident. Apply the proper categorization and severity levels (P1-P4) to dictate response priority.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 3 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 3</span>
+        <div class="step-title">Incident Logging</div>
+        <p>Meticulously track every action taken and piece of evidence found using tools like TheHive Project or JIRA. Pen and paper act as fallbacks.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 4 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 4</span>
+        <div class="step-title">Notification of Relevant Parties</div>
+        <p>Promptly alert stakeholders based on the incident’s scope. Internal communications to IT/Legal/PR, and external to regulatory bodies or customers.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 5 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 5</span>
+        <div class="step-title">Detailed Investigation & Reporting</div>
+        <p>Conduct a comprehensive technical analysis. Compile all findings, logs, and evidence to understand the full impact.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 6 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 6</span>
+        <div class="step-title">Final Report Creation</div>
+        <p>Create the definitive record of the event detailing what happened, the root cause, and the remedial actions taken for executives and regulators.</p>
+    </div>
+    
+    <div class="flowchart-connector"></div>
+    
+    <!-- Step 7 -->
+    <div class="flowchart-step">
+        <span class="flowchart-step-number">Step 7</span>
+        <div class="step-title">Feedback Loop</div>
+        <p>Revisit the event in a post-incident reflection. Identify what went wrong and how to improve the response process, turning the incident into a strategic asset.</p>
+    </div>
+</div>

@@ -5,9 +5,9 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, network, wireshark]
 ---
 
-# **Introduction**
+## **Introduction**
 
-## **Network Traffic Analysis**
+### **Network Traffic Analysis**
 
 Network Traffic Analysis (NTA) play an active role in:
 
@@ -19,7 +19,7 @@ Network Traffic Analysis (NTA) play an active role in:
 
 → NTA is also come in handy went investigating past incidents and during threat hunting
 
-### **Required Skills and Knowledge**
+#### **Required Skills and Knowledge**
 
 - TCP/IP Stack & OSI Model
 - Basic Network Concepts
@@ -28,7 +28,7 @@ Network Traffic Analysis (NTA) play an active role in:
 - Protocol Transport Encapsulation
 - Enviroment and Equipment
 
-### **Common Traffic Analysis Tools**
+#### **Common Traffic Analysis Tools**
 
 | **Tool / Technology** | **Description** |
 | --- | --- |
@@ -44,7 +44,7 @@ Network Traffic Analysis (NTA) play an active role in:
 
 An many more…
 
-### BPF Syntax
+#### BPF Syntax
 
 All these tool above share the same syntax, that is **Berkeley Packet Filter (BPF) syntax**.
 
@@ -69,19 +69,19 @@ All these tool above share the same syntax, that is **Berkeley Packet Filter (BP
 
 For more information on BPF syntax, check out this [reference](https://www.ibm.com/docs/en/qsip/7.4?topic=queries-berkeley-packet-filters).
 
-### **Performing Network Traffic Analysis**
+#### **Performing Network Traffic Analysis**
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image.png)
 
-#### #1 Ingest Traffic
+##### #1 Ingest Traffic
 
 On a huge system, once we have decided on our placement. begin capturing traffic. Utilize capture filters if we already have an idea of what we are looking for.
 
-#### #2 Reduce Noise by Filtering
+##### #2 Reduce Noise by Filtering
 
 Once we complete the initial capture, an attempt to filter out unnecessary traffic from our view can make analysis easier. (Broadcast and Multicast traffic, for example.)
 
-#### #3 **Analyze and Explore**
+##### #3 **Analyze and Explore**
 
 Look at specific hosts, protocols, even things as specific as flags set in the TCP header. The following questions will help us:
 
@@ -89,7 +89,7 @@ Look at specific hosts, protocols, even things as specific as flags set in the T
 - Can we see users attempting to access resources to which they should not have access?
 - Are different hosts talking to each other that typically do not?
 
-#### #4 **Detect and Alert**
+##### #4 **Detect and Alert**
 
 - Are we seeing any errors? Is a device not responding that should be?
 - Use our analysis to decide if what we see is benign or potentially malicious.
@@ -97,13 +97,13 @@ Look at specific hosts, protocols, even things as specific as flags set in the T
 can run heuristics and signatures against the traffic to determine if
 anything within is potentially malicious.
 
-#### #5 **Fix and Monitor**
+##### #5 **Fix and Monitor**
 
 This is not a part of the loop but, if we make a change or fix an issue, we should continue to monitor the source for a time to determine if the issue has been resolved.
 
-## **Networking Primer - Layers 1-4**
+### **Networking Primer - Layers 1-4**
 
-### **TCP Three-way Handshake**
+#### **TCP Three-way Handshake**
 
 The process happens in three steps:
 
@@ -119,7 +119,7 @@ The server replies with a `SYN/ACK`, and the client confirms with an `ACK`.
 
 Once this session is successfully established, the client sends an HTTP request for an image `logo.png`, and as the data streams in, TCP continuously sends acknowledgments (`ACK`s) for each chunk of data to ensure reliable delivery.
 
-### **TCP Session Teardown**
+#### **TCP Session Teardown**
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%202.png)
 
@@ -135,9 +135,9 @@ In the image, we can see a set of packets similar to the three-way handshake. Th
 2. `FIN, ACK`,
 3. `ACK`
 
-## **Networking Primer - Layers 5-7**
+### **Networking Primer - Layers 5-7**
 
-### HTTP Methods
+#### HTTP Methods
 
 | **Method** | **Necessary** | **Description** |
 | --- | --- | --- |
@@ -152,7 +152,7 @@ In the image, we can see a set of packets similar to the three-way handshake. Th
 
 For more information on HTTP as a protocol or how it operates, see [RFC:2616](https://datatracker.ietf.org/doc/html/rfc2616).
 
-### HTTPS
+#### HTTPS
 
 HTTPS is a secure version of HTTP that uses TLS/SSL encryption on ports 443 or 8443 to protect your entire web session from eavesdroppers. This ensures all communication between your browser and the server remains completely private and safe.
 
@@ -176,7 +176,7 @@ security parameters and that the handshake occurred without tampering by an atta
 
 For more information on how HTTPS functions and how TLS performs security operations, see [RFC:2246](https://datatracker.ietf.org/doc/html/rfc2246).
 
-### FTP
+#### FTP
 
 **File Transfer Protocol (FTP)** is an Application Layer protocol used for data transfer that is generally considered insecure and is largely being replaced by **SFTP**.
 
@@ -207,7 +207,7 @@ FTP supports both standard user and **anonymous** authentication, and it operate
 
 For more information on FTP, see [RFC:959](https://datatracker.ietf.org/doc/html/rfc959).
 
-### SMB
+#### SMB
 
 SMB is a protocol used in Windows networks that allows computers to easily share resources with each other, like shared files, drives, and printers.
 
@@ -231,15 +231,15 @@ Here is a classic example of what an automated attack looks like on the wire.
 
 This is just one example of SMB use. Another common thing we will see is file-share access between servers and hosts. For the most part, this is regular communication. However, if we see a host access file shares on other hosts, this is not common. We have to pay attention to who is requesting connections, where to, and what they are doing.
 
-# **Analysis**
+## **Analysis**
 
-## **The Analysis Process**
+### **The Analysis Process**
 
 NTA is about breaking down network data to figure out what is normal and catching what isn't. It gives defenders the visibility needed to set a **baseline** for everyday traffic, making it much easier to spot anomalies.
 
 *Collecting a baseline* means recording what normal, everyday network traffic looks like so you can easily spot unusual or malicious activity when it happens.
 
-### **Analysis Dependencies**
+#### **Analysis Dependencies**
 
 Traffic capturing and analysis can be performed in two different ways.
 
@@ -263,11 +263,11 @@ Once the normal traffic is filtered out, outliers stand out immediately. For exa
 
 In a security breach or network failure, time is your biggest enemy. A baseline gives you the rapid visibility needed to spot the bad acting, escalate the issue, and start remediation before major damage occurs.
 
-## **Analysis in Practice**
+### **Analysis in Practice**
 
 Analysis can be distilled down to a few basic tenets
 
-### **Descriptive Analysis**
+#### **Descriptive Analysis**
 
 **Descriptive analysis** is to describe a data set *based on individual characteristics*. It helps to detect possible errors in data collection and/or outliers in the data set.
 
@@ -282,19 +282,19 @@ Analysis can be distilled down to a few basic tenets
 
 → Using this workflow, we will determine our issue, what we are looking for, when, and where to find it. 
 
-### **Diagnostic Analysis**
+#### **Diagnostic Analysis**
 
 Diagnostic analysis clarifies the **causes**, **effects**, and **interactions of conditions**. It provides insights that are obtained through correlations and interpretation. 
 
 → It like trying to figure out why is happened and how it happened.
 
-### **Predictive Analysis**
+#### **Predictive Analysis**
 
 **Predictive analysis** creates a *predictive model for future probabilities*. this method use to identify **trends**, **detect deviations from expected values** at an early stage, and **predict future occurrences** as accurately as possible.
 
 → Based on the results of descriptive and diagnostic analyses.
 
-### **Prescriptive Analysis**
+#### **Prescriptive Analysis**
 
 The final step of analyzing traffic is figuring out **what actions to take** to fix the current problem and stop it from happening again. Once the fire is out, you document "lessons learned" to improve your defensive posture and processes for the next time.
 
@@ -309,21 +309,21 @@ The final step of analyzing traffic is figuring out **what actions to take** to 
 
 → The Process is a Loop
 
-### **Key Components of an Effective Analysis**
+#### **Key Components of an Effective Analysis**
 
-#### **1. Know your environment**
+##### **1. Know your environment**
 
 You must understand what your baseline looks like. Maintaining updated asset inventories and network maps is essential so you can easily differentiate between legitimate hosts and rogue devices.
 
-#### **2. Placement is Key**
+##### **2. Placement is Key**
 
 Position your capture tools as close to the source of the problem as possible. For external threats, monitor your inbound internet links; for isolated internal issues, place your tools on the specific network segment of the affected host.
 
-#### **3. Persistence**
+##### **3. Persistence**
 
 Threats are not always noisy or constant. Malicious activities, like an attacker's Command and Control (C2) server pinging a compromised machine, might only happen once a day. You must be patient and keep digging to catch stealthy anomalies before they escalate into a full-scale breach.
 
-### **Analysis Approach**
+#### **Analysis Approach**
 
 - **Start with the basics:** Attackers usually come from the internet, so *check common traffic first* (like web browsing and emails). Then, check *remote connection tools* (like SSH or RDP) to make sure they aren't breaking your company's security rules.
 - **Look for repeating patterns:** *If a computer reaches out to the internet at the exact same time every day*, it might be malware automatically checking in with a hacker's server.
@@ -332,9 +332,9 @@ Threats are not always noisy or constant. Malicious activities, like an attacker
 - **Ask for a second opinion:** Staring at lines of data for too long can make you blind to clues. *Ask a teammate to look at the data with you* to catch things you might have missed.
 - **Use all your tools:** Don't just rely on basic packet-capture software. *Use your firewalls, automated alerts*, and *other security tools* to get the full picture and keep your network safe.
 
-# **Tcpdump**
+## **Tcpdump**
 
-## **Tcpdump Fundamentals**
+### **Tcpdump Fundamentals**
 
 Tcpdump is a command=line packet sniffer and it had a Windows twin called WinDump (but it depreccated so we could install a WSL to run **Tcpdump**). To capture network traffic from "off the wire," it uses the libraries `pcap` and `libpcap`, paired with an interface in promiscuous mode to listen for data.
 
@@ -350,9 +350,9 @@ Often it can be found in `/usr/sbin/tcpdump`.
 sudo tcpdump
 ```
 
-### **Traffic Captures with Tcpdump**
+#### **Traffic Captures with Tcpdump**
 
-#### **Basic Capture Options**
+##### **Basic Capture Options**
 
 | **Switch Command** | **Result** |
 | --- | --- |
@@ -373,7 +373,7 @@ sudo tcpdump
 
 To see the complete list of switches, we can utilize the `man` pages.
 
-#### **Listing Available Interfaces**
+##### **Listing Available Interfaces**
 
 ```bash
 $ sudo tcpdump -D
@@ -389,7 +389,7 @@ $ sudo tcpdump -D
 9.dbus-session (D-Bus session bus) [none]
 ```
 
-#### **Choosing an Interface to Capture From**
+##### **Choosing an Interface to Capture From**
 
 ```bash
 $ sudo tcpdump -i eth0
@@ -401,7 +401,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 10:58:33.750393 IP 172.16.146.2.52195 > 172.16.146.1.domain: 7579+ PTR? 1.1.67.172.in-addr.arpa. (41)
 ```
 
-#### **Disable Name Resolution**
+##### **Disable Name Resolution**
 
 ```powershell
 $ sudo tcpdump -i eth0 -nn
@@ -421,7 +421,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 - 1st -n is dns → ip
 - 2nd -n is protocol → port
 
-#### **Display the Ethernet Header**
+##### **Display the Ethernet Header**
 
 ```bash
 $ sudo tcpdump -i eth0 -e
@@ -434,7 +434,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 11:05:46.049134 8a:66:5a:11:8d:64 (oui Unknown) > 00:0c:29:97:52:65 (oui Unknown), ethertype IPv4 (0x0800), length 147: 172.16.146.1.domain > 172.16.146.2.
 ```
 
-#### **Include ASCII and Hex Output**
+##### **Include ASCII and Hex Output**
 
 ```bash
 $ sudo tcpdump -i eth0 -X
@@ -461,7 +461,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
     0x0040:  7061 0000 0c00 01                        pa.....
 ```
 
-#### **Tcpdump Switch Combinations**
+##### **Tcpdump Switch Combinations**
 
 ```bash
 $ sudo tcpdump -i eth0 -nnvXX
@@ -502,7 +502,7 @@ tcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 
     0x0040:  042e 0000 0000 0103 0307                 ..........
 ```
 
-### **Tcpdump Output**
+#### **Tcpdump Output**
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%206.png)
 
@@ -516,7 +516,7 @@ tcpdump: listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 
 | Protocol Options | `Blue`  Here, we will see any negotiated TCP values established between the client and server, such as window size, selective acknowledgments, window scale factors, and more. |
 | Notes / Next Header | `White`  Misc notes the dissector found will be present<br>here. As the traffic we are looking at is encapsulated, we may see more header information for different protocols. In our example, we can see the TCPDump dissector recognizes FTP traffic within the encapsulation to display it for us. |
 
-### **File Input/Output with Tcpdump**
+#### **File Input/Output with Tcpdump**
 
 Using `-w` will write our capture to a file.
 
@@ -549,7 +549,7 @@ reading from file /home/trey/output.pcap, link-type EN10MB (Ethernet), snapshot 
 
 This will read the capture stored in `output.pcap`.
 
-## **Tcpdump Packet Filtering**
+### **Tcpdump Packet Filtering**
 
 | **Filter** | **Result** |
 | --- | --- |
@@ -566,7 +566,7 @@ This will read the capture stored in `output.pcap`.
 
 With these filters, we can filter the network traffic on most properties to facilitate the analysis
 
-### **Host Filter**
+#### **Host Filter**
 
 ```bash
 $ ### Syntax: host [IP]
@@ -581,7 +581,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 14:50:53.175714 IP 172.16.146.1.domain > 172.16.146.2.35744: 55991 1/0/0 PTR ec2-52-31-199-148.eu-west-1.compute.amazonaws.com. (107)
 ```
 
-### **Source/Destination Filter**
+#### **Source/Destination Filter**
 
 ```bash
 $ ### Syntax: src/dst [host|net|port] [IP|Network Range|Port]
@@ -601,7 +601,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 14:53:36.370791 IP 172.16.146.2.32972 > 172.16.146.1.domain: 3856+ PTR? 1.146.16.172.in-addr.arpa. (43)
 ```
 
-### **Utilizing Source With Port as a Filter**
+#### **Utilizing Source With Port as a Filter**
 
 ```bash
 $ sudo tcpdump -i eth0 tcp src port 80
@@ -615,7 +615,7 @@ $ sudo tcpdump -i eth0 tcp src port 80
 06:17:09.945011 IP 65.208.228.223.http > dialin-145-254-160-237.pools.arcor-ip.net.3372: Flags [.], seq 5521:6901, ack 480, win 6432, length 1380: HTTP
 ```
 
-### **Using Destination in Combination with the Net Filter**
+#### **Using Destination in Combination with the Net Filter**
 
 ```bash
 $ sudo tcpdump -i eth0 dest net 172.16.146.0/24
@@ -634,7 +634,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 16:33:14.446955 IP 64.233.177.103.443 > 172.16.146.2.36050: Flags [.], seq 12907:14325, ack 1, win 316, options [nop,nop,TS val 2311579498 ecr 263866084], length 1418
 ```
 
-### **Protocol Filter - Common Name**
+#### **Protocol Filter - Common Name**
 
 ```bash
 $ ### Syntax: [tcp/udp/icmp]
@@ -644,7 +644,7 @@ $ sudo tcpdump -i eth0 udp
 06:17:10.225414 IP 145.253.2.203.domain > dialin-145-254-160-237.pools.arcor-ip.net.3009: 35 4/0/0 CNAME pagead2.google.com., CNAME pagead.google.akadns.net., A 216.239.59.104, A 216.239.59.99 (146)
 ```
 
-### **Protocol Filter - Number**
+#### **Protocol Filter - Number**
 
 ```bash
 $ ### Syntax: proto [protocol number]
@@ -654,7 +654,7 @@ $ sudo tcpdump -i eth0 proto 17
 06:17:10.225414 IP 145.253.2.203.domain > dialin-145-254-160-237.pools.arcor-ip.net.3009: 35 4/0/0 CNAME pagead2.google.com., CNAME pagead.google.akadns.net., A 216.239.59.104, A 216.239.59.99 (146)
 ```
 
-### **Port Filter**
+#### **Port Filter**
 
 ```bash
 $ ### Syntax: port [port number]
@@ -678,7 +678,7 @@ $ sudo tcpdump -i eth0 tcp port 443
 06:17:10.295515 IP dialin-145-254-160-237.pools.arcor-ip.net.3371 > 216.239.59.99.http: Flags [P.], seq 918691368:918692089, ack 778785668, win 8760, length 721: HTTP: GET /pagead/ads?client=ca-pub-2309191948673629&random=1084443430285&lmt=1082467020&format=468x60_as&output=html&url=http%3A%2F%2Fwww.ethereal.com%2Fdownload.html&color_bg=FFFFFF&color_text=333333&color_link=000000&color_url=666633&color_border=666633 HTTP/1.1
 ```
 
-### **Port Range Filter**
+#### **Port Range Filter**
 
 ```bash
 $ ### Syntax: portrange [portrange 0-65535]
@@ -698,7 +698,7 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 13:10:35.208007 IP atl26s18-in-f3.1e100.net.http > 172.16.146.2.55074: Flags [.], ack 379, win 261, options [nop,nop,TS val 1000152462 ecr 1337520305], length 0
 ```
 
-### **Less/Greater Filter**
+#### **Less/Greater Filter**
 
 ```bash
 $ ### Syntax: less/greater [size in bytes]
@@ -729,7 +729,7 @@ $ sudo tcpdump -i eth0 less 64
 
 ```
 
-### **Utilizing Greater**
+#### **Utilizing Greater**
 
 ```bash
 $ sudo tcpdump -i eth0 greater 500
@@ -748,7 +748,7 @@ enough information to reproduce the problem is enclosed, and if a
 known fix for it exists, include that as well.
 ```
 
-### **AND Filter**
+#### **AND Filter**
 
 ```bash
 $ ### Syntax: and [requirement]
@@ -761,7 +761,7 @@ $ sudo tcpdump -i eth0 host 192.168.0.1 and port 23
 21:12:38.537538 IP 192.168.0.1.telnet > 192.168.0.2.1550: Flags [P.], seq 1:4, ack 28, win 17349, options [nop,nop,TS val 2467372 ecr 10233636], length 3 [telnet DO AUTHENTICATION]
 ```
 
-### **OR Filter**
+#### **OR Filter**
 
 ```bash
 $ ### Syntax: or/|| [requirement]
@@ -788,7 +788,7 @@ reading from file sus.pcap, link-type EN10MB (Ethernet), snapshot length 262144
 14:54:10.697834 IP dns.google > 172.16.146.2: ICMP echo reply, id 51661, seq 28, length 64
 ```
 
-### **NOT Filter**
+#### **NOT Filter**
 
 ```bash
 $ ### Syntax: not/! [requirement]
@@ -810,17 +810,17 @@ $ sudo tcpdump -r sus.pcap not icmp
 14:54:16.670559 IP 172.16.146.2.55592 > ec2-52-211-164-46.eu-west-1.compute.amazonaws.com.https: Flags [.], ack 34, win 501, options [nop,nop,TS val 713253120 ecr 12294021], length 0
 ```
 
-### **Pre-Capture Filters VS. Post-Capture Processing**
+#### **Pre-Capture Filters VS. Post-Capture Processing**
 
 When utilizing filters, we can apply them directly to the capture or apply them when reading a capture file. By applying them to the capture, it will drop any traffic not matching the filter. This will reduce the amount of data in the captures and potentially clear out traffic we may need later, so use them only when looking for something specific, such as troubleshooting a network connectivity issue.
 
-### **Interpreting Tips and Tricks**
+#### **Interpreting Tips and Tricks**
 
 - Using the `-S` switch will display absolute sequence numbers
 - The `-v`, `-X`, and `-e` switches can help you increase the amount of data captured
 - the `-c`, `-n`, `-s`, `-S`, and `-q` switches can help reduce and modify the amount of data written and seen.
 
-### **Piping a Capture to Grep**
+#### **Piping a Capture to Grep**
 
 ```bash
 $ sudo tcpdump -Ar http.cap -l | grep 'mailto:*'
@@ -834,7 +834,7 @@ reading from file http.cap, link-type EN10MB (Ethernet), snapshot length 65535
 
 Using `-l` in this way allowed us to examine the capture quickly and grep for keywords or formatting we suspected could be there. In this case, we used the `-l` to pass the output to `grep` and looking for any instance of the phrase `mailto:*` 
 
-### **Looking for TCP Protocol Flags**
+#### **Looking for TCP Protocol Flags**
 
 ```bash
 $ tcpdump -i eth0 'tcp[13] &2 != 0'
@@ -861,11 +861,11 @@ listening on eth0, link-type EN10MB (Ethernet), snapshot length 262144 bytes
 
 Our results include only packets with the TCP `SYN` flag set from what we see above.
 
-# **Wireshark**
+## **Wireshark**
 
-## **Filter Options**
+### **Filter Options**
 
-### **Capture Filters**
+#### **Capture Filters**
 
 | **Capture Filters** | **Result** |
 | --- | --- |
@@ -891,7 +891,7 @@ Or change some save file option.
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%209.png)
 
-### **Display Filters**
+#### **Display Filters**
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2010.png)
 
@@ -905,11 +905,11 @@ Or change some save file option.
 | tcp.port / udp.port != x | will capture everything except the port specified |
 | and / or / not | AND will concatenate, OR will find either of two options, NOT will exclude your input option. |
 
-## **Wireshark Advanced Usage**
+### **Wireshark Advanced Usage**
 
-### **Plugins**
+#### **Plugins**
 
-#### Statistic Tab
+##### Statistic Tab
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2011.png)
 
@@ -948,7 +948,7 @@ Or change some save file option.
 | **IPv4 Statistics** | Protocol-Specific | Gives a breakdown of all source and destination IPv4 addresses. | Tracking routing behaviors and mapping IP distribution for older/standard IPs. |
 | **IPv6 Statistics** | Protocol-Specific | Gives a breakdown of all source and destination IPv6 addresses. | Tracking routing behaviors and mapping IP distribution for modern IPs. |
 
-#### Analyze Tab
+##### Analyze Tab
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2012.png)
 
@@ -977,40 +977,40 @@ The **Top 3 Most Important Tools** in this menu that you will use constantly:
 | **Show Packet Bytes...** | Deep Dive | Opens a separate window to view the raw hexadecimal and ASCII bytes of a selected packet. | Inspecting the absolute raw data of a packet for hidden malware or anomalies. |
 | **Expert Information** | Deep Dive | A log of all anomalies, warnings, errors, and noteworthy events Wireshark automatically detected. | Quickly finding where the network is broken (e.g., finding packets that were dropped or rejected). |
 
-### **Following TCP Streams**
+#### **Following TCP Streams**
 
 ![follow-tcp.gif](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/follow-tcp.gif)
 
-### **Extract Files From The GUI**
+#### **Extract Files From The GUI**
 
 ![extract-http.gif](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/extract-http.gif)
 
 - Select the File radial → Export → , then select the protocol format to extract from.
 - (DICOM, HTTP, SMB, etc.)
 
-### **FTP Disector**
+#### **FTP Disector**
 
 `ftp` - Will display anything about the FTP protocol
 
-#### **FTP-Request-Command Filter**
+##### **FTP-Request-Command Filter**
 
 `ftp.request.command` - Will show any commands sent across the ftp-control channel ( port 21 )
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2013.png)
 
-### **FTP-Data Filter**
+#### **FTP-Data Filter**
 
 `ftp-data` - Will show any data transferred over the data channel ( port 20 )
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2014.png)
 
-### Export Object
+#### Export Object
 
 **File > Export Objects** 
 
 ![image.png](/assets/img/cdsa/sec7-intro-to-network-traffic-analysis/image%2015.png)
 
-### **Decrypting connections**
+#### **Decrypting connections**
 
 To apply the key in Wireshark:
 

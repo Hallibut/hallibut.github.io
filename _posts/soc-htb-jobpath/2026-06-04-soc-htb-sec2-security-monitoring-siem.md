@@ -5,18 +5,18 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, siem]
 ---
 
-# **SIEM & SOC Fundamentals**
+## **SIEM & SOC Fundamentals**
 
-## SIEM Definition & Fundamentals
+### SIEM Definition & Fundamentals
 
-### What is SIEM?
+#### What is SIEM?
 
 **Security Information and Event Management (SIEM)** is a foundational cybersecurity solution that combines data management with real-time event monitoring.
 
 - It collects and analyzes `log data` from various network hardware and applications, offering `operational tools` like incident handling, visual `dashboards`, and `reporting`.
 - SIEM enables IT teams to **detect and respond to cyber threats proactively or in real-time**, significantly speeding up incident resolution and strengthening the organization's overall security framework.
 
-### **The Evolution Of SIEM Technology**
+#### **The Evolution Of SIEM Technology**
 
 The acronym "SIEM" was introduced by Gartner analysts in 2005, created by merging two distinct security frameworks: **Security Information Management (SIM)** and **Security Event Management (SEM)**.
 
@@ -25,7 +25,7 @@ The acronym "SIEM" was introduced by Gartner analysts in 2005, created by mergin
 
 → In subsequent years, vendors combined the capabilities of both SIM and SEM to form modern SIEM. This unified technology became widely adopted for providing a comprehensive approach to collecting, analyzing, and managing security threats across an organization.
 
-### **How Does A SIEM Solution Work?**
+#### **How Does A SIEM Solution Work?**
 
 - SIEM systems **collect log data** from a **wide array of sources** (PCs, servers, network devices) and **consolidate it into a standardized format for easier analysis**.
 - Security experts will then using this data to **identify breaches** → When a potential threat is detected, the system sends concise, multi-channel alerts (via email, SMS, or dashboard pop-ups).
@@ -33,9 +33,9 @@ The acronym "SIEM" was introduced by Gartner analysts in 2005, created by mergin
 
 → SIEM does not replace other security tools like IDS or IPS. Instead, it works alongside them, correlating their log data to pinpoint complex events and offering a comprehensive, centralized view of the organization's security posture.
 
-### **SIEM Business Requirements & Use Cases**
+#### **SIEM Business Requirements & Use Cases**
 
-#### **Log Aggregation & Normalization**
+##### **Log Aggregation & Normalization**
 
 SIEM systems improve cybersecurity by **collecting and combining logs from different sources**, such as firewalls, databases, and applications, into **a single location**. 
 
@@ -43,13 +43,13 @@ This gives the SOC team better visibility into the organization's IT environment
 
 By analyzing all this information together, the SOC team can respond to threats more quickly and reduce their impact on the organization.
 
-#### **Threat Alerting**
+##### **Threat Alerting**
 
 Threat alerting is an important SIEM feature that helps IT security teams detect potential threats within large amounts of security data. 
 
 Using **advanced analytics** and **threat intelligence**, SIEM systems identify suspicious activities and generate real-time alerts. These alerts provide security teams with the information needed to quickly investigate and respond to threats, helping reduce the impact of security incidents and protect the organization's critical assets.
 
-#### **Contextualization & Response**
+##### **Contextualization & Response**
 
 Generating alerts alone is not enough, because **too many alerts** and **false positives** can overwhelm IT security teams. 
 
@@ -59,13 +59,13 @@ SIEM solutions can also **automatically filter less important alerts** and, in s
 
 By reducing alert fatigue and focusing attention on genuine risks, SIEM improves the efficiency and effectiveness of incident response.
 
-#### **Compliance**
+##### **Compliance**
 
 SIEM solutions help organizations meet security and compliance requirements by **monitoring and analyzing network activity in real time**. They support **compliance with regulations** such as PCI DSS, HIPAA, and GDPR by enabling security teams to detect and respond to incidents quickly.
 
 SIEM systems also provide **automated reporting** and **auditing** features, making it easier for organizations to generate compliance reports, prove compliance, and satisfy auditors and regulators.
 
-### **Data Flows Within A SIEM**
+#### **Data Flows Within A SIEM**
 
 Data in a SIEM system goes through three main stages. 
 
@@ -75,7 +75,7 @@ Data in a SIEM system goes through three main stages.
 
 → This helps them identify potential security threats and respond to security incidents quickly and effectively.
 
-### **What Are The Benefits Of Using A SIEM Solution**
+#### **What Are The Benefits Of Using A SIEM Solution**
 
 - Provides a centralized platform for collecting, monitoring, and analyzing security logs and events across an organization.
 - Helps security teams detect important incidents, respond to threats more quickly, and avoid missing critical events.
@@ -83,9 +83,9 @@ Data in a SIEM system goes through three main stages.
 - Modern SIEMs also use advanced analytics and AI to identify suspicious behavior and potential attacks.
 - In addition, SIEM supports compliance requirements by proving that systems are monitored, logs are retained, and security activities are regularly reviewed, helping organizations meet standards such as ISO and HIPAA.
 
-## SOC Definition & Fundamentals
+### SOC Definition & Fundamentals
 
-### **What Is A SOC?**
+#### **What Is A SOC?**
 
 A Security Operations Center (SOC) is a centralized function dedicated to the continuous, 24/7 monitoring and defense of an organization's cybersecurity posture. Its primary goal is to minimize the impact of security breaches through rapid detection and response.
 
@@ -95,7 +95,7 @@ To achieve this, a SOC relies on three foundational pillars:
 2. **Technology:** Advanced security tools, such as SIEM, IDS/IPS, and EDR, combined with proactive threat intelligence and threat hunting.
 3. **Processes:** Strict, well-defined workflows for managing security incidents, encompassing triage, containment, elimination, and recovery.
 
-### **How Does A SOC Work?**
+#### **How Does A SOC Work?**
 
 The **SOC team is dedicated to the day-to-day operational execution of cybersecurity** rather than designing overarching security strategies or building the architecture.
 
@@ -105,7 +105,7 @@ Their core responsibilities and capabilities include:
 - **Advanced Investigations:** Some mature SOCs go beyond basic monitoring by incorporating digital forensics and malware analysis to uncover the root causes of complex attacks.
 - **Strategic Collaboration:** The SOC works hand-in-hand with Incident Response (IR) teams to ensure that once a threat is detected, it is properly neutralized and the organization remains secure.
 
-### **Roles Within A SOC**
+#### **Roles Within A SOC**
 
 **A highly effective SOC team relies on a structured hierarchy of specialized roles to continuously manage and defend an organization's security posture.**
 
@@ -122,7 +122,7 @@ While the exact structure varies by organization, a standard SOC is divided into
     - **Threat Intel Analysts:** Track the global threat landscape to proactively prepare the team for emerging attacks.
     - **Support Roles:** Include Security Engineers (maintaining the tools), Compliance Specialists (ensuring regulatory alignment), and Training Coordinators (educating general staff).
 
-### **SOC Stages**
+#### **SOC Stages**
 
 Security Operations Centers have evolved through three distinct generations to keep pace with increasingly complex and sophisticated cyber threats:
 
@@ -132,7 +132,7 @@ Security Operations Centers have evolved through three distinct generations to k
 
 [https://www.linkedin.com/pulse/evolution-security-operations-center-20-beyond-krishnan-jagannathan/](https://www.linkedin.com/pulse/evolution-security-operations-center-20-beyond-krishnan-jagannathan/)
 
-## MITRE ATT&CK & Security Operations
+### MITRE ATT&CK & Security Operations
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image.png)
 
@@ -145,15 +145,15 @@ By providing a common, unified language for cybersecurity, the framework drives 
 - **Threat Intelligence:** Enriches cyber threat data by providing deep context on *how* an adversary operates, making it easier to share actionable intelligence across teams.
 - **Training:** Serves as a continuously updated textbook to educate security professionals on the latest adversary behaviors.
 
-## **SIEM Use Case Development**
+### **SIEM Use Case Development**
 
-### **What Is A SIEM Use Case?**
+#### **What Is A SIEM Use Case?**
 
 **SIEM use cases** are **predefined threat scenarios**, like brute-force login attempts, that allow SOC teams to automatically correlate log data and quickly respond to potential security incidents.
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%201.png)
 
-### **SIEM Use Case Development Lifecycle**
+#### **SIEM Use Case Development Lifecycle**
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%202.png)
 
@@ -165,31 +165,31 @@ By providing a common, unified language for cybersecurity, the framework drives 
 6. **Onboarding:** `Test the new rule in a development environment` to identify and reduce false positives before pushing it to production.
 7. **Fine-tuning:** `Continuously gather analyst feedback and adjust` the rule (such as adding whitelists) to maintain its accuracy over time.
 
-### **How To Build SIEM Use Cases**
+#### **How To Build SIEM Use Cases**
 
 **Building effective SIEM use cases requires a structured lifecycle that moves from initial risk assessment and alert design to strict procedural governance and incident response.**
 
-#### **Phase 1: Strategy & Design**
+##### **Phase 1: Strategy & Design**
 
 - **Assess & Alert:** Identify your organization's specific risks and configure alerts to monitor all relevant systems.
 - **Prioritize & Map:** Determine the potential impact of each threat and map the alert to a recognized framework (like MITRE ATT&CK or the Cyber Kill Chain).
 - **Define Metrics:** Establish baseline goals for Time to Detection (TTD) and Time to Response (TTR) to measure both SIEM and analyst performance.
 
-#### **Phase 2: Procedures & Tuning**
+##### **Phase 2: Procedures & Tuning**
 
 - **Standardize Operations:** Create a Standard Operating Procedure (SOP) detailing exactly how analysts should handle the alert.
 - **Continuous Tuning:** Outline a strict process for refining and fine-tuning alerts over time to reduce false positives and noise.
 - **Knowledge Management:** Build a central Knowledge Base (KB) and maintain documentation on logging health, alert logic, and trigger frequencies.
 
-#### **Phase 3: Response & Governance**
+##### **Phase 3: Response & Governance**
 
 - **Incident Response:** Develop a clear Incident Response Plan (IRP) detailing the exact steps to take when an alert is a confirmed threat (true positive).
 - **Team Alignment:** Set strict Service Level Agreements (SLAs) and Operational Level Agreements (OLAs) to ensure rapid, coordinated hand-offs between different security and IT teams.
 - **Auditing:** Implement an audit process to regularly review how alerts are being managed and how effectively analysts are reporting incidents.
 
-## Introduction To The Elastic Stack
+### Introduction To The Elastic Stack
 
-### **What Is The Elastic Stack?**
+#### **What Is The Elastic Stack?**
 
 `The Elastic Stack` is an open-source platform used for collecting, processing, storing, searching, and visualizing log data.
 
@@ -214,7 +214,7 @@ The Elastic Stack can be used as a SIEM solution to collect, store, analyze, and
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%205.png)
 
-### **The Elastic Stack As A SIEM Solution**
+#### **The Elastic Stack As A SIEM Solution**
 
 By searching and correlating data in Elasticsearch, security teams can detect potential security incidents and threats. Since SOC analysts primarily interact with the Elastic Stack through Kibana, understanding how to use Kibana effectively is an important skill for security monitoring and investigation.
 
@@ -229,13 +229,13 @@ To help analysts quickly drill down into massive amounts of log data, KQL utiliz
 - **Logical & Comparison Operators:** Uses standard logic (`AND`, `OR`, `NOT`) and comparison symbols (`>`, `<`, `>=`, `<=`) to build complex, highly specific queries, such as isolating events within exact timeframes or matching specific error codes.
 - **Wildcards:** Employs characters like  to search for broader patterns, making it easier to catch variations in targeted accounts (e.g., `admin*`).
 
-### **How To Identify The Available Data**
+#### **How To Identify The Available Data**
 
 **To build accurate KQL queries, analysts must first identify the correct data fields and values by either dynamically exploring data using Kibana's "Discover" feature or proactively referencing Elastic's official field documentation.**
 
 If you know what you are looking for (like a failed login attempt) but don't know the exact field name in your database, you can use these two approaches to find out:
 
-#### Approach 1: Dynamic Discovery via Free Text Search
+##### Approach 1: Dynamic Discovery via Free Text Search
 
 Instead of guessing field names, you can use Kibana's "Discover" tab to reverse-engineer the data structure:
 
@@ -250,7 +250,7 @@ Instead of guessing field names, you can use Kibana's "Discover" tab to reverse-
 
 - *Pro-Tip:* You will often see multiple fields for the same data (e.g., `event.code` and `winlog.event_id`). It is generally best practice to use **Elastic Common Schema (ECS)** fields (like `event.code`) to ensure your queries work universally across your entire security environment.
 
-#### Approach 2: Consult Elastic Documentation
+##### Approach 2: Consult Elastic Documentation
 
 Before diving into the Discover tab, you can map out your queries by reviewing Elastic's extensive documentation. Familiarizing yourself with these dictionaries takes the guesswork out of log analysis:
 
@@ -262,7 +262,7 @@ Before diving into the Discover tab, you can map out your queries by reviewing E
 - [Filebeat fields](https://www.elastic.co/guide/en/beats/filebeat/current/exported-fields.html)
 - [Filebeat ECS fields](https://www.elastic.co/guide/en/beats/filebeat/current/exported-fields-ecs.html)
 
-### **The Elastic Common Schema (ECS)**
+#### **The Elastic Common Schema (ECS)**
 
 ECS acts as **a universal translator** for your log data, forcing disparate data sources to use a single, standardized naming convention across the entire Elastic Stack.
 
@@ -271,9 +271,9 @@ ECS acts as **a universal translator** for your log data, forcing disparate data
 - **Optimized Tooling:** Standardized logs result in cleaner Kibana visualizations and guarantee full compatibility with advanced features like Elastic Machine Learning and automated threat hunting.
 - **Future-Proofing:** Adopting this foundational schema ensures your data will be perfectly formatted for any future tools or updates Elastic releases.
 
-# **The Triaging Process**
+## **The Triaging Process**
 
-## **What Is Alert Triaging?**
+### **What Is Alert Triaging?**
 
 **Alert Triaging** is the process of evaluating and prioritizing security alerts to assess threat level and potential impact, enabling analysts to allocate resources effectively.
 
@@ -285,11 +285,11 @@ ECS acts as **a universal translator** for your log data, forcing disparate data
 - Coordinates response across multiple stakeholders
 - Enables timely mitigation of high-level security incidents
 
-## **What Is The Ideal Triaging Process?**
+### **What Is The Ideal Triaging Process?**
 
 Alert triaging is when something suspicious happens, you don't just react immediately. You gather clues, analyze them, consult others, and then decide on the best course of action.
 
-### Step 1: Initial Alert Review
+#### Step 1: Initial Alert Review
 
 When an alert comes in, the analyst starts by gathering basic but essential information. This includes examining:
 
@@ -299,7 +299,7 @@ When an alert comes in, the analyst starts by gathering basic but essential info
 
 **The goal of this step is to establish foundational context before diving any deeper into the investigation.** Think of it as reading the first page of a case file — you need to understand the basics before you can make sense of anything else.
 
-### Step 2: Alert Classification
+#### Step 2: Alert Classification
 
 Once the initial review is done, the analyst classifies the alert based on three key factors:
 
@@ -309,7 +309,7 @@ Once the initial review is done, the analyst classifies the alert based on three
 
 **Not every alert carries the same weight.** Some are minor and routine, while others demand immediate attention. Proper classification ensures that the right level of priority is assigned from the very start.
 
-### Step 3: Alert Correlation
+#### Step 3: Alert Correlation
 
 The analyst then checks whether the alert is connected to anything else by:
 
@@ -320,7 +320,7 @@ The analyst then checks whether the alert is connected to anything else by:
 
 **A single alert on its own might mean very little, but when connected to other alerts, it could reveal a much larger and more coordinated attack.**
 
-### Step 4: Enrichment of Alert Data
+#### Step 4: Enrichment of Alert Data
 
 To build a fuller and more accurate picture, the analyst gathers additional evidence, which may include:
 
@@ -331,7 +331,7 @@ To build a fuller and more accurate picture, the analyst gathers additional evid
 
 **This step is essentially about collecting as much relevant evidence as possible before drawing any conclusions** — similar to gathering physical evidence at a crime scene.
 
-### Step 5: Risk Assessment
+#### Step 5: Risk Assessment
 
 With the evidence in hand, the analyst evaluates how serious the situation could become by considering:
 
@@ -342,7 +342,7 @@ With the evidence in hand, the analyst evaluates how serious the situation could
 
 **The purpose of this step is to understand the full potential damage if the alert turns out to represent a genuine threat.**
 
-### Step 6: Contextual Analysis
+#### Step 6: Contextual Analysis
 
 Beyond the technical details, the analyst also looks at the broader context surrounding the alert by assessing:
 
@@ -352,7 +352,7 @@ Beyond the technical details, the analyst also looks at the broader context surr
 
 **Context is what transforms raw technical data into meaningful and actionable intelligence.** Without it, even the most detailed alert data can be misinterpreted.
 
-### Step 7: Incident Response Planning
+#### Step 7: Incident Response Planning
 
 If the alert appears to be significant, the analyst begins preparing a formal response plan by:
 
@@ -362,7 +362,7 @@ If the alert appears to be significant, the analyst begins preparing a formal re
 
 **Having a clear and structured plan in place before taking action ensures that the response is organized and effective rather than rushed and reactive.**
 
-### Step 8: Consultation with IT Operations
+#### Step 8: Consultation with IT Operations
 
 Before executing any response, the analyst consults with IT operations or other relevant departments to rule out innocent explanations. This involves asking:
 
@@ -372,7 +372,7 @@ Before executing any response, the analyst consults with IT operations or other 
 
 **This step is crucial for avoiding overreaction to false positives** and ensuring that the response effort is directed only at genuine threats.
 
-### Step 9: Response Execution
+#### Step 9: Response Execution
 
 With all the information gathered and necessary consultations completed, the analyst determines and carries out the appropriate response:
 
@@ -381,7 +381,7 @@ With all the information gathered and necessary consultations completed, the ana
 
 **This is the point where investigation turns into direct action.** Every decision made here is backed by the thorough groundwork laid in the previous steps.
 
-### Step 10: Escalation
+#### Step 10: Escalation
 
 Some situations are too serious or complex to handle at the analyst level alone. **Escalation is triggered when:**
 
@@ -400,7 +400,7 @@ When escalating, the analyst must provide:
 
 **In extreme cases, external parties such as law enforcement, incident response providers, or national CERTs may also need to be involved** based on legal or regulatory requirements.
 
-### Step 11: Continuous Monitoring
+#### Step 11: Continuous Monitoring
 
 Even after escalation, the analyst remains actively involved by:
 
@@ -410,7 +410,7 @@ Even after escalation, the analyst remains actively involved by:
 
 **Security incidents are dynamic and can change rapidly** — which is why constant monitoring throughout the entire response process is absolutely essential and cannot be overlooked.
 
-### Step 12: De-escalation
+#### Step 12: De-escalation
 
 As the incident comes under control, the analyst evaluates whether de-escalation is appropriate. **De-escalation is warranted when:**
 
@@ -426,22 +426,22 @@ At this point, the analyst:
 
 **Every incident, regardless of its severity, is an opportunity to strengthen the organization's ability to handle future threats.**
 
-## **Elastic Stack SIEM Home Mini Lab**
+### **Elastic Stack SIEM Home Mini Lab**
 
-### Prerequisites
+#### Prerequisites
 
 Before starting, ensure you have:
 
 - VirtualBox or VMware
 - Basic knowledge of Linux and virtualization software
 
-#### **Task 1: Set up an Elastic Account**
+##### **Task 1: Set up an Elastic Account**
 
 - Sign up at [Elastic Cloud](https://cloud.elastic.co/registration). You will automatically have 14 days free trial
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%209.png)
 
-##### **Main Workspace (Center):**
+###### **Main Workspace (Center):**
 
 - **Hosted deployments:** This section manages your traditional, dedicated cloud environments. I’m currently have one active deployment named "My deployment." It is running on Google Cloud Platform (GCP) in the Iowa region, using Elastic version 9.4.2, and its status is currently "Healthy." I can also click "Open" to access its Kibana interface or "Manage" to configure its hardware, scaling, and settings.
 
@@ -455,7 +455,7 @@ Before starting, ensure you have:
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2012.png)
 
-##### Right Sidebar
+###### Right Sidebar
 
 This side panel provides operational awareness and updates from Elastic:
 
@@ -466,43 +466,43 @@ This side panel provides operational awareness and updates from Elastic:
 - **News:** A feed of recent product releases (like versions 8.19.16 and 9.3.5), security updates, and wrap-ups from tech conferences.
 - **Community:** Links to events, webinars, and community forums, such as the "ElasticON" event shown here.
 
-##### Left Navigation Menu
+###### Left Navigation Menu
 
 This sidebar provides access to overarching account and security controls, such as managing users (**Security**), organizing your cloud environment (**Organization**), and handling invoices and subscriptions (**Billing**).
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2014.png)
 
-#### Manage deployment
+##### Manage deployment
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2015.png)
 
-#### Hosted (System Setup)
+##### Hosted (System Setup)
 
 - **Overview:** The main dashboard showing your basic information and connection links.
 - **Edit:** The page where you add more storage space, increase memory, or update the software version.
 - **Kibana:** Settings for your visual search interface.
 - **Integrations Server:** Settings for the tools that collect data from your outside applications.
 
-#### Monitoring (System Status)
+##### Monitoring (System Status)
 
 - **Health:** A quick indicator of whether your system is working normally or experiencing errors.
 - **Logs and metrics:** Detailed background text recording system events, warnings, and errors.
 - **Performance:** Line graphs showing exactly how much computer processing power and memory your system is currently using.
 - **Activity:** A history log of administrative changes you or your team have made to the setup.
 
-#### Elasticsearch (Data Management)
+##### Elasticsearch (Data Management)
 
 - **Shards and instances:** A visual layout of how your data files are divided and distributed across the servers.
 - **Snapshots:** The tool used to create backups of your data or restore information from an older backup.
 - **API console:** A text window where you can type direct code commands to interact with the database.
 
-#### Access and security (Protection)
+##### Access and security (Protection)
 
 - **Security:** The place to reset passwords, manage secret keys, and restrict which outside IP addresses are allowed to connect to your system.
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2016.png)
 
-#### Core System Controls
+##### Core System Controls
 
 - **Open Kibana:** Opens the main web interface where you view your data, run searches, and look at your charts.
 
@@ -512,7 +512,7 @@ This sidebar provides access to overarching account and security controls, such 
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2018.png)
 
-#### Setup and Connections
+##### Setup and Connections
 
 - **Copy Icon for Cloud ID (Overlapping Squares):** Copies a unique text string to your clipboard. You paste this string into other software so it knows exactly how to connect to your database.
 
@@ -522,18 +522,18 @@ This sidebar provides access to overarching account and security controls, such 
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2020.png)
 
-#### Configuration
+##### Configuration
 
 - **Edit Icon for Hardware Profile:** Takes you directly to the settings page where you can increase the physical storage space, memory, or processing power of your system.
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2021.png)
 
-#### General Management
+##### General Management
 
 - **Add tags:** Used to attach custom labels to your system (like "project A" or "testing") to help you organize and sort your resources.
 - **Add budget:** Used to set a spending limit. It will alert you if your system costs exceed the amount you allow.
 
-#### Instances
+##### Instances
 
 - **Data & Master Instances:** You have two main 4GB servers (Zone A and Zone B). They store your actual data and run your search queries. Zone A is currently the active manager (**master**), while Zone B is the backup (**master eligible**) ready to take over if Zone A fails.
 
@@ -551,7 +551,7 @@ This sidebar provides access to overarching account and security controls, such 
 
 ![image.png](/assets/img/cdsa/sec2-security-monitoring-siem/image%2025.png)
 
-### **Task 2: Setting up the Linux VM (Kali Linux)**
+#### **Task 2: Setting up the Linux VM (Kali Linux)**
 
 - Download the Kali Linux VM from [Kali Linux](https://www.kali.org/get-kali/#kali-virtual-machines).
 - Create a new VM using VirtualBox or VMware.
@@ -562,14 +562,14 @@ This sidebar provides access to overarching account and security controls, such 
 
 I’m using VirtualBox.
 
-### **Task 3: Setting up the Agent to Collect Logs**
+#### **Task 3: Setting up the Agent to Collect Logs**
 
-#### Navigate to Kibana
+##### Navigate to Kibana
 
 - Look at the top right corner of your current screen and click the blue **Open Kibana** button.
 - The system will open a new tab and load the main Kibana workspace interface.
 
-#### Create the Elastic Defend Configuration
+##### Create the Elastic Defend Configuration
 
 - Select **Add integration**
     
@@ -590,7 +590,7 @@ I’m using VirtualBox.
     I’m going to use version for `linux x86_64`.
     
 
-#### Verify Success
+##### Verify Success
 
 - Go back to the web browser where Kibana is open.
     - Your Kali machine is now connected and protected by Elastic Defend. You can close this panel.
@@ -602,14 +602,14 @@ I’m using VirtualBox.
 
 Verify installation using: `sudo systemctl status elastic-agent.service`
 
-#### Configure the Protection Level
+##### Configure the Protection Level
 
 - **Integration name:** Give it a simple name (e.g., `kali-defend`).
 - **Configuration Preset:** Select **Complete EDR** from the menu to get full endpoint detection and response capabilities.
 - **Agent policy:** Select **New hosts** and name your new policy (e.g., `Kali-Policy`).
 - Click **"Save and continue"** at the bottom.
 
-### **Task 4: Generating Security Events on the Kali VM**
+#### **Task 4: Generating Security Events on the Kali VM**
 
 - Ensure Nmap is installed (`sudo apt-get install nmap` if not preinstalled).
 - Run Nmap scans (`sudo nmap <ip-address>`) to generate security events.
@@ -619,8 +619,8 @@ Verify installation using: `sudo systemctl status elastic-agent.service`
     - `nmap -p- <ip-address>`
     - `nmap -sS [scanme.nmap.org](http://scanme.nmap.org/)`
 
-### **Task 5: Querying for Security Events in the Elastic SIEM**
+#### **Task 5: Querying for Security Events in the Elastic SIEM**
 
-### **Task 6: Create a Dashboard to Visualize Events**
+#### **Task 6: Create a Dashboard to Visualize Events**
 
-### **Task 7: Create an Alert**
+#### **Task 7: Create an Alert**

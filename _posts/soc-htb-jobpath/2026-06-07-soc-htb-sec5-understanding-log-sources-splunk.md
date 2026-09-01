@@ -5,11 +5,11 @@ categories: [HTB SOC Jobpath]
 tags: [cdsa, study-notes, htb-soc-jobpath, splunk]
 ---
 
-# **Splunk Fundamentals**
+## **Splunk Fundamentals**
 
-## **Introduction To Splunk & SPL**
+### **Introduction To Splunk & SPL**
 
-### **What Is Splunk?**
+#### **What Is Splunk?**
 
 **Splunk** is a tool used to collect, query, and analyze computer logs (could be use in real-time).
 
@@ -33,13 +33,13 @@ Additionally, we have:
 - `Cluster Master`: The cluster master *coordinates the activities of indexers* in a clustered environment, ensuring data replication and search affinity.
 - `License Master`: It manages the *licensing details* of the Splunk platform.
 
-### **Splunk As A SIEM Solution**
+#### **Splunk As A SIEM Solution**
 
 **Splunk** can play a crucial role as a log management solution, but its true value lies in its analytics-driven **Security Information and Event Management (SIEM)** capabilities.
 
 **Splunk Processing Language (SPL)** is a language containing over a hundred commands, functions, arguments, and clauses, used for searching, filtering, transforming, and visualizing data in **Splunk**.
 
-#### Setup Splunk to collect  Windows Security and Sysmon logs
+##### Setup Splunk to collect  Windows Security and Sysmon logs
 
 **Step 1: Configure the Splunk Server (Receiver)**
 
@@ -119,7 +119,7 @@ The Universal Forwarder is a lightweight agent installed on the Windows machine 
 
 ![image.png](/assets/img/cdsa/sec5-understanding-log-sources-splunk/image%2010.png)
 
-#### Basic Usage
+##### Basic Usage
 
 | **Concept / Command** | **What It Does** | **When & Where to Use It** | **SPL Example** | **Step-by-Step Breakdown** |
 | --- | --- | --- | --- | --- |
@@ -146,9 +146,9 @@ As with any language, proficiency comes with practice and experience. Find below
 - [https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/](https://docs.splunk.com/Documentation/SplunkCloud/latest/SearchReference/)
 - [https://docs.splunk.com/Documentation/SplunkCloud/latest/Search/](https://docs.splunk.com/Documentation/SplunkCloud/latest/Search/)
 
-### **How To Identify The Available Data**
+#### **How To Identify The Available Data**
 
-#### **Data and field identification approach 1: Leverage Splunk's Search & Reporting Application (SPL)**
+##### **Data and field identification approach 1: Leverage Splunk's Search & Reporting Application (SPL)**
 
 We can use **Search & Reporting Application,** already intergrated in Splunk.
 
@@ -171,7 +171,7 @@ We can use **Search & Reporting Application,** already intergrated in Splunk.
 
 Also check out this [video](https://youtu.be/vRRXnt89y7E?si=dJdb9ZPpMXSzKkjE).
 
-#### **Data and field identification approach 2: Leverage Splunk's User Interface**
+##### **Data and field identification approach 2: Leverage Splunk's User Interface**
 
 | **Concept / UI Feature** | **What It Is** | **Where to Find It** | **Key Details & Step-by-Step** |
 | --- | --- | --- | --- |
@@ -184,17 +184,17 @@ Also check out this [video](https://youtu.be/vRRXnt89y7E?si=dJdb9ZPpMXSzKkjE).
 > **Pro Tip:** If you navigate to the **Data Models** page and it looks completely empty, don't panic! Just go back, run a quick basic search in the Search & Reporting app, and then navigate back to Data Models. It should populate.
 > 
 
-# **Investigating With Splunk**
+## **Investigating With Splunk**
 
-## Introduction To Labs
+### Introduction To Labs
 
 To proceed, we need access to data we can analyze and use for threat hunting. There are a few sources we can turn to. One source that Splunk provides, along with installation instructions, is [BOTS](https://github.com/splunk/botsv3). Alternatively, [nginx_json_logs](https://raw.githubusercontent.com/elastic/examples/refs/heads/master/Common%20Data%20Formats/nginx_json_logs/nginx_json_logs) is a handy resource providing us with dummy logs in JSON format.
 
 Through this section, i’m going to use BOTS repository.
 
-## Insight
+### Insight
 
-### 1. Efficient Hunting & Methodology
+#### 1. Efficient Hunting & Methodology
 
 - **The Big Picture:** Moving from analyzing a single machine to monitoring an entire network means dealing with massive amounts of data. The biggest challenge is filtering out the background "noise" to find actual threats.
 - **Optimize Your Queries (SPL):** Avoid generic, broad searches (like searching for `domain*` across all data). Instead, use targeted searches by specifying fields (like `ComputerName="*domain"`). This makes searches significantly faster and reduces the processing load on your SIEM.
@@ -203,7 +203,7 @@ Through this section, i’m going to use BOTS repository.
     - **Event ID 10 (Process Access):** Useful for detecting memory dumping (like attackers trying to steal passwords from the LSASS process).
     - **Event IDs 11, 13, 17, 18:** Helpful for tracking tools like PsExec or monitoring file and registry changes.
 
-### 2. Spotting the Known (TTP-based Detection)
+#### 2. Spotting the Known (TTP-based Detection)
 
 - **The Concept:** This strategy involves looking for specific behaviors that match known attacker Tactics, Techniques, and Procedures (TTPs). You are searching for footprints of known attacks.
 - **What to look for:**
@@ -212,7 +212,7 @@ Through this section, i’m going to use BOTS repository.
     - **Evasion Tactics:** Look for executables running from strange locations (like the `Downloads` folder), or files that are intentionally misspelled (like `psexe.exe` instead of `PSEXESVC.exe`) to blend in.
 - **The Catch:** While highly effective, this method only catches threats we already know about. Because attackers change their methods constantly, this approach is not enough on its own.
 
-### 3. Spotting the Unusual (Analytics-based Detection)
+#### 3. Spotting the Unusual (Analytics-based Detection)
 
 - **The Concept:** Instead of looking for specific attack patterns, you use math and statistics to define what "normal" behavior looks like, and then search for things that deviate from that baseline (outliers).
 - **How it works in Splunk:** You use statistical SPL commands like `streamstats`, `bucket`, `eval`, and `eventstats` to calculate averages and standard deviations over time periods (e.g., hourly buckets).
@@ -222,7 +222,7 @@ Through this section, i’m going to use BOTS repository.
     - A program loading a massive number of DLL files in a very short timeframe.
 - **The Catch:** This method can generate a lot of "False Positives" (false alarms) because legitimate, safe software sometimes behaves erratically. It requires careful tuning to fit the specific behavior of your organization's network.
 
-### 4. Alerting & The Analyst Mindset
+#### 4. Alerting & The Analyst Mindset
 
 - **Hunting vs. Alerting:** Threat hunting is an active, manual search through logs. Alerts are automated rules. A good alert must have high accuracy (high-fidelity) and shouldn't be easily bypassed by attackers making minor tweaks to their scripts.
 - **Avoid Alert Fatigue:** If alerts trigger too often on normal activity, the defense team will get overwhelmed and might start ignoring them. You must rigorously filter out legitimate background noise (like known safe processes, JIT compilers, etc.) to keep alerts meaningful.
@@ -230,6 +230,6 @@ Through this section, i’m going to use BOTS repository.
 
 → The strongest defense mechanism combines both approaches. Use **TTPs (Spot the Known)** to quickly catch familiar attacks, and use **Analytics (Spot the Unusual)** to uncover hidden, evolving, or zero-day threats that don't match any known signatures.
 
-## Botv3 Analyzing
+### Botv3 Analyzing
 
 [Check It Out]

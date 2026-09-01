@@ -21,7 +21,7 @@ My interests:
 This documents:
 - **CTF Writeups** - Solutions and deep dives into CTF challenges
 - **Learning Notes** - My journey in RE and binary exploitation
-- **Tool Reviews** - Insights on reversing tools and methodologies
+- **Tool Reviews** - Insights on tools and methodologies
 
 
 > *"Insanity is doing the same thing over and over again and expecting different results."*
