@@ -347,6 +347,10 @@
             activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
         },
         {
+            sender: 'atk', text: "The Tool: To automatically craft and send these S4U2Self (and S4U2Proxy) requests, I will use an exploit tool like Rubeus.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
             sender: 'atk', text: "S4U2Self Request: Hey KDC... The Administrator TOTALLY just authenticated to me. Can I get a forwardable ticket proving they are here?",
             activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-atk-dc'
         },
@@ -455,8 +459,9 @@
     window.addEventListener('resize', drawLines);
 
     function updateDiagram() {
-        drawLines();
-        const step = steps[currentStep];
+        try {
+            drawLines();
+            const step = steps[currentStep];
         
         progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
         
@@ -511,6 +516,9 @@
         
         if (step.anim) {
             packetEl.classList.add(step.anim);
+        }
+        } catch (e) {
+            progressEl.innerText = "Error: " + e.message;
         }
     }
 
