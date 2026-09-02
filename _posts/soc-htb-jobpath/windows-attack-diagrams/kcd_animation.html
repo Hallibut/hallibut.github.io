@@ -171,16 +171,16 @@
     }
     /* Bubble for User (placed to the right of User) */
     .bubble-user { left: 180px; top: 40px; }
-    .bubble-user::after { top: 20px; right: 100%; left: auto; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
+    .bubble-user::after { top: 20px; right: auto; left: -12px; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
     /* Bubble for Attacker (placed to the right of Attacker) */
     .bubble-atk { left: 180px; top: 220px; }
-    .bubble-atk::after { top: 20px; right: 100%; left: auto; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
+    .bubble-atk::after { top: 20px; right: auto; left: -12px; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
     /* Bubble for DC (placed to the left of DC) */
     .bubble-dc { right: 200px; top: 40px; }
-    .bubble-dc::after { top: 20px; left: 100%; right: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    .bubble-dc::after { top: 20px; left: auto; right: -12px; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
     /* Bubble for SVC (placed to the left of SVC) */
     .bubble-svc { right: 200px; top: 220px; }
-    .bubble-svc::after { top: 20px; left: 100%; right: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    .bubble-svc::after { top: 20px; left: auto; right: -12px; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
 
     /* Responsive Design */
     @media (max-width: 650px) {
@@ -198,10 +198,10 @@
         .bubble-atk { left: 110px; top: 210px; max-width: 150px; font-size: 0.75rem; }
         .bubble-dc { right: 110px; top: 30px; max-width: 150px; font-size: 0.75rem; }
         .bubble-svc { right: 110px; top: 210px; max-width: 150px; font-size: 0.75rem; }
-        .bubble-user::after { left: auto; right: 100%; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
-        .bubble-atk::after { left: auto; right: 100%; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
-        .bubble-dc::after { right: auto; left: 100%; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
-        .bubble-svc::after { right: auto; left: 100%; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
+        .bubble-user::after { left: auto; right: auto; left: -12px; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
+        .bubble-atk::after { left: auto; right: auto; left: -12px; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
+        .bubble-dc::after { right: auto; left: auto; right: -12px; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
+        .bubble-svc::after { right: auto; left: auto; right: -12px; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
     }
 
 

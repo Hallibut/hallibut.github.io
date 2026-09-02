@@ -117,7 +117,7 @@ Hint: the keyboard is in Danish so change it back to US
 
 I was provided with 2 machines, one belonging to the user Bob which appears to already be in the active directory, and the other is Kali Linux, which I will use to crack passwords offline
 
-Trước tiên mình cần thực hiện Kerberoasting trên AD Domain này
+First, I need to perform Kerberoasting on this AD Domain
 
 ```python
 C:\Users\bob\Downloads>Rubeus.exe Kerberoast /outfile:spn.txt
@@ -127,7 +127,7 @@ C:\Users\bob\Downloads>Rubeus.exe Kerberoast /outfile:spn.txt
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%208.png)
 
-Chuyển nội dung này sang Kali, mình sử dụng Hash Cat để giải mã.
+Transferring this to Kali, I will use Hashcat to crack it.
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%209.png)
 
@@ -188,7 +188,7 @@ hashcat -m 13100 -a 0 spn.txt rockyou.txt --force
 > **Connect to the target and perform an AS-REProasting attack. What is the password for the user anni?**
 > 
 
-Đề bài muốn mình perform a AS-REP Roasting với Rubeus
+The scenario requires me to perform AS-REP Roasting with Rubeus
 
 ```bash
 C:\Users\bob\Downloads>Rubeus.exe asreproast /outfile:asroast.txt
@@ -211,7 +211,7 @@ hashcat -m 18200 -a 0 asreproast.txt rockyou.txt --force
 > **After performing the AS-REProasting attack, connect to DC1 (172.16.18.3) as 'htb-student:HTB_@cademy_stdnt!' and look at the logs in Event Viewer. What is the TargetSid of the svc-iam user?**
 > 
 
-Truy cập vào Event Viewer
+Access the Event Viewer
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2016.png)
 
@@ -222,7 +222,7 @@ Truy cập vào Event Viewer
 #### Description
 
 - **SYSVOL (System Volume)** is a special shared folder, automatically created on all **DCs** in a Windows Server AD network.
-- Thư mục này chứa hai thành phần đặc biệt quan trọng để quản trị hệ thống mạng:
+- This folder contains two particularly critical components for network administration:
     - **Group Policy Objects (GPO):** Contains policy configuration files, including templates, registry files (registry.pol), and security configuration files used to enforce rules on workstations and user accounts.
     - **Logon/Startup Scripts:** Contains scripts (batch, PowerShell...) that run automatically when the computer starts up, shuts down, or when a user logs in/out.
 - Location and mechanism
@@ -350,7 +350,7 @@ The file being read is Groups.xml and Access Mask **0x80** (**ReadAttributes)** 
 
 - Use **Honey pot,** follow these mindsets when setup:
     - Only link the honeypot GPO to **non-critical**.
-    - Phải có hệ thống tự động giám sát liên tục.
+    - Continuous automated monitoring systems must be in place.
     - Automatically unlink the honeypot GPO and immediately disable the user responsible for modifying it if tampering is detected.
     
     ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2028.png)
@@ -372,8 +372,8 @@ The file being read is Groups.xml and Access Mask **0x80** (**ReadAttributes)** 
     - **Credentials on a user's local machine** primarily reside in text files, Excel sheets, or Word documents.
 - Reason why shares folder accidentally open for everyone
     - Provide privillege to Users group not knowing is include every users inside domain
-    - Lưu file code chứa mật khẩu ở ổ cứng cục bộ nhưng quên mất thư mục đó đang được chia sẻ công khai ra mạng.
-    - Mở toang quyền truy cập thư mục tạm thời để chuyển file cho nhanh nhưng sau đó lại quên khóa lại.
+    - Saving code files containing passwords on a local drive but forgetting that the directory is publicly shared on the network.
+    - Temporarily opening up wide directory permissions to transfer files quickly, but forgetting to lock them down afterward.
     - Append $ to the folder name to hide it on Windows, but hacker scanning tools will still clearly see it.
 
 #### Attack path
@@ -394,7 +394,7 @@ The file being read is Groups.xml and Access Mask **0x80** (**ReadAttributes)** 
 
 ![copyImage.png](/assets/img/cdsa/sec6-windows-attacks-defense/copyImage.png)
 
-- Search for the NetBIOS name of the domain bởi vì attacker thường sẽ dùng cái này để search mật khẩu.
+- Search for the NetBIOS name of the domain because attackers will typically use this to search for passwords.
 - Use **Honey pot,** follow these mindsets when setup:
     - A service account that was created **2+ years ago**. The last password change should be at least one year ago.
     - The last modification time of the file containing the fake password must be after the last password change of the account. Because it is a fake password, there is no risk of a threat agent compromising the account.
@@ -431,7 +431,7 @@ Navigating to this directory using cd, I tried searching for **files containing 
 findstr /s /i /m "eagle" *
 ```
 
-there are two files: **connect.ps1** và **connect2.ps1**. Using the cat command to view their contents, I found the password for the **Administrator2**
+there are two files: **connect.ps1** and **connect2.ps1**. Using the cat command to view their contents, I found the password for the **Administrator2**
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2030.png)
 
@@ -498,7 +498,7 @@ SearchUserClearTextInformation
 > **Using the password discovered in the previous question, try to authenticate to DC1 as the bonni user. Is the password valid?No**
 > 
 
-Để đăng nhập bằng tài khoản này vào DC01, mình dùng Remote Desktop Connection
+To log into DC01 using this account, I will use Remote Desktop Connection
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2034.png)
 
@@ -565,7 +565,7 @@ Change user to get the necessary permissions (password is `Slavi123`)
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2040.png)
 
-Truy cập vào thư mục để sử dụng **mimikatz.exe**
+Navigate to the directory to use **mimikatz.exe**
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2041.png)
 
@@ -578,16 +578,16 @@ Dump it out
 > **After performing the DCSync attack, connect to DC1 as 'htb-student:HTB_@cademy_stdnt!' and look at the logs in Event Viewer. What is the Task Category of the events generated by the attack?**
 > 
 
-Truy cập Event ID 4622 **(An operation was performed on an object)**, để xem hành vi truy cập mới nhất vào DC
+Check Event ID 4622 **(An operation was performed on an object)**, to view the latest access activity to the DC
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2043.png)
 
 You can see there is 1 regular user (which is Rocky) who directly accessed the root object of the Domain
 
-**Dấu hiệu Tấn công cốt lõi:**
+**Core Attack Indicators:**
 
-- **AccessMask:** `0x100` tương ứng với quyền *Control Access*.
-- **Properties:** Chứa GUID `{1131f6ad-9c07-11d1-f79f-00c04fc2dcd2}`. Chi tiết đại diện cho quyền **DS-Replication-Get-Changes-All**.
+- **AccessMask:** `0x100` which corresponds to the *Control Access* permission.
+- **Properties:** Contains the GUID `{1131f6ad-9c07-11d1-f79f-00c04fc2dcd2}`. This specifically represents the **DS-Replication-Get-Changes-All** privilege.
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2044.png)
 
@@ -642,13 +642,13 @@ kerberos::golden /domain:eagle.local /sid:[Domain SID] /rc4:[krbtgt hash] /user:
 > **Practice the techniques shown in this section. What is the NTLM hash of the krbtgt user?**
 > 
 
-To create a ticket, I need the hash of **krbtgt** và **SID** of the entire domain. First, retrieve the hash of the **krbtgt** using the DCSync technique**:**
+To create a ticket, I need the hash of **krbtgt** and the **SID** of the entire domain. First, retrieve the hash of the **krbtgt** using the DCSync technique**:**
 
 Change user to get the necessary permissions (password is `Slavi123`)
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2040.png)
 
-Truy cập vào thư mục để sử dụng mimikatz.exe
+Navigate to the directory to use mimikatz.exe
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2041.png)
 
@@ -681,7 +681,7 @@ Ok now, let cook the ticket and pass it to the current session
 
 ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2049.png)
 
-We got fully access now, mặc dù chỉ hỏi phần mã hash nhưng t đã tìm full luôn rồi, kkk
+We have full access now. Even though only the hash was asked for, I went ahead and extracted everything, lol.
 
 **Answer: db0d0630064747072a7da3f7c3b4069e**
 

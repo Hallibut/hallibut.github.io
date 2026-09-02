@@ -168,7 +168,7 @@
         top: 20px;
     }
     #kerb-diagram .bubble-atk::after {
-        top: 100%; left: 70px;
+        top: auto; bottom: -12px; left: 70px;
         border: 6px solid transparent;
         border-top-color: var(--link-color, #85c49b);
     }
@@ -178,7 +178,7 @@
         top: -30px;
     }
     #kerb-diagram .bubble-dc::after {
-        top: 100%; right: 70px;
+        top: auto; bottom: -12px; right: 70px;
         border: 6px solid transparent;
         border-top-color: var(--link-color, #85c49b);
     }
@@ -282,6 +282,7 @@
 </div>
 
 <script>
+(() => {
     const steps = [
         {
             sender: 'atk', text: "Initial Access: I've compromised a domain machine and dumped its memory.",
@@ -393,12 +394,13 @@
         lAtkSvc.setAttribute('y2', cSvc.y);
 
         // Update CSS Variables for Packet Animation
-        document.documentElement.style.setProperty('--atk-x', cAtk.x + 'px');
-        document.documentElement.style.setProperty('--atk-y', cAtk.y + 'px');
-        document.documentElement.style.setProperty('--dc-x', cDc.x + 'px');
-        document.documentElement.style.setProperty('--dc-y', cDc.y + 'px');
-        document.documentElement.style.setProperty('--svc-x', cSvc.x + 'px');
-        document.documentElement.style.setProperty('--svc-y', cSvc.y + 'px');
+        const diagramEl = document.getElementById('kerb-diagram');
+        diagramEl.style.setProperty('--atk-x', cAtk.x + 'px');
+        diagramEl.style.setProperty('--atk-y', cAtk.y + 'px');
+        diagramEl.style.setProperty('--dc-x', cDc.x + 'px');
+        diagramEl.style.setProperty('--dc-y', cDc.y + 'px');
+        diagramEl.style.setProperty('--svc-x', cSvc.x + 'px');
+        diagramEl.style.setProperty('--svc-y', cSvc.y + 'px');
     }
 
     // Recalculate on load and resize
@@ -466,4 +468,5 @@
     });
 
     setTimeout(updateDiagram, 100);
+})();
 </script>
