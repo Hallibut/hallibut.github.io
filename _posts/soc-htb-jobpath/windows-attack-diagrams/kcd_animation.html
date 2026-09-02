@@ -418,7 +418,7 @@
         const cDc = getCenter('kcd-node-dc');
         const cSvc = getCenter('kcd-node-svc');
 
-        // Update SVG Lines
+        /*  Update SVG Lines */
         const lUserAtk = document.getElementById('kcd-line-user-atk');
         if (lUserAtk) {
             lUserAtk.setAttribute('x1', cUser.x);
@@ -443,7 +443,7 @@
             lAtkSvc.setAttribute('y2', cSvc.y);
         }
 
-        // Update CSS Variables for Packet Animation
+        /*  Update CSS Variables for Packet Animation */
         const diag = document.getElementById('kcd-diagram');
         diag.style.setProperty('--user-x', cUser.x + 'px');
         diag.style.setProperty('--user-y', cUser.y + 'px');
@@ -455,7 +455,7 @@
         diag.style.setProperty('--svc-y', cSvc.y + 'px');
     }
 
-    // Recalculate on load and resize
+    /*  Recalculate on load and resize */
     window.addEventListener('resize', drawLines);
 
     function updateDiagram() {

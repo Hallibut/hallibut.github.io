@@ -380,7 +380,7 @@
         const cDc = getCenter('node-dc');
         const cSvc = getCenter('node-svc');
 
-        // Update SVG Lines
+        /*  Update SVG Lines */
         const lAtkDc = document.getElementById('line-atk-dc');
         lAtkDc.setAttribute('x1', cAtk.x);
         lAtkDc.setAttribute('y1', cAtk.y);
@@ -393,7 +393,7 @@
         lAtkSvc.setAttribute('x2', cSvc.x);
         lAtkSvc.setAttribute('y2', cSvc.y);
 
-        // Update CSS Variables for Packet Animation
+        /*  Update CSS Variables for Packet Animation */
         const diagramEl = document.getElementById('kerb-diagram');
         diagramEl.style.setProperty('--atk-x', cAtk.x + 'px');
         diagramEl.style.setProperty('--atk-y', cAtk.y + 'px');
@@ -403,7 +403,7 @@
         diagramEl.style.setProperty('--svc-y', cSvc.y + 'px');
     }
 
-    // Recalculate on load and resize
+    /*  Recalculate on load and resize */
     window.addEventListener('resize', drawLines);
 
     function updateDiagram() {
