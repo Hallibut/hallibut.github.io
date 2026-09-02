@@ -1,0 +1,488 @@
+<style>
+    .kerb-container {
+        font-family: inherit;
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .kerb-diagram {
+        position: relative;
+        height: 420px;
+        background: transparent;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .kerb-node {
+        position: absolute;
+        width: 140px;
+        padding: 1rem 0.5rem;
+        background: var(--main-bg, #1e1e1e);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        z-index: 10;
+        color: var(--text-muted-color, #aaa);
+    }
+    
+    .kerb-node.active {
+        color: var(--text-color, #fff);
+        border-color: var(--link-color, #85c49b);
+        box-shadow: 0 0 15px rgba(133, 196, 155, 0.2);
+    }
+
+    .kerb-node-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    .kerb-node-icon {
+        font-size: 2.2rem;
+    }
+
+    /* Node positioning */
+    #gpo-node-atk { top: 160px; left: 2%; }
+    #gpo-node-dc { top: 80px; right: 5%; }
+    #gpo-node-tgt { bottom: 20px; right: 5%; }
+
+    /* SVG Lines connecting nodes */
+    .kerb-svg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .kerb-line {
+        stroke: rgba(255,255,255,0.2);
+        stroke-width: 1.5;
+        stroke-dasharray: 4, 4;
+        transition: all 0.3s ease;
+    }
+    .kerb-line.active {
+        stroke: var(--link-color, #85c49b);
+        stroke-dasharray: none;
+        stroke-width: 2.5;
+    }
+
+    /* Dynamic Packet animation */
+    .kerb-packet {
+        position: absolute;
+        top: 0; left: 0;
+        font-size: 1.5rem;
+        color: var(--link-color, #85c49b);
+        z-index: 5;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 12px var(--link-color, #85c49b);
+    }
+    
+    @keyframes move-atk-dc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+    }
+    @keyframes move-dc-atk {
+        0% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+    }
+    @keyframes offline-crack {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        50% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(2); opacity: 1; color: #ef4444; text-shadow: 0 0 20px #ef4444; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 0; }
+    }
+
+    @keyframes move-atk-svc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        100% { transform: translate(calc(var(--svc-x) - 12px), calc(var(--svc-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+    }
+
+    @keyframes gpo-move-dc-tgt {
+        0% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        100% { transform: translate(calc(var(--tgt-x) - 12px), calc(var(--tgt-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+    }
+    @keyframes gpo-move-tgt-dc {
+        0% { transform: translate(calc(var(--tgt-x) - 12px), calc(var(--tgt-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        100% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+    }
+    @keyframes gpo-move-tgt-atk {
+        0% { transform: translate(calc(var(--tgt-x) - 12px), calc(var(--tgt-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+    }
+
+    .anim-atk-dc { animation: move-atk-dc 1.5s ease-in-out forwards; }
+    .anim-dc-atk { animation: move-dc-atk 1.5s ease-in-out forwards; }
+    .anim-crack { animation: offline-crack 2s ease-in-out forwards; }
+    .anim-atk-tgt { animation: gpo-move-atk-tgt 1.5s ease-in-out forwards; }
+    .anim-dc-tgt { animation: gpo-move-dc-tgt 1.5s ease-in-out forwards; }
+    .anim-tgt-dc { animation: gpo-move-tgt-dc 1.5s ease-in-out forwards; }
+    .anim-tgt-atk { animation: gpo-move-tgt-atk 1.5s ease-in-out forwards; }
+
+    /* Waiting Icon */
+    .waiting-icon {
+        display: none;
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        font-size: 1.2rem;
+        color: var(--link-color, #85c49b);
+        background: var(--main-bg, #1e1e1e);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        z-index: 15;
+    }
+    .kerb-node.waiting .waiting-icon {
+        display: block;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        position: absolute;
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid var(--link-color, #85c49b);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        max-width: 340px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .chat-bubble.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .chat-bubble::after {
+        content: '';
+        position: absolute;
+        width: 0; height: 0;
+    }
+    /* Bubble for Attacker (placed above) */
+    #gpo-diagram .bubble-atk {
+        left: 2%;
+        top: 20px;
+    }
+    #gpo-diagram .bubble-atk::after {
+        top: 100%; left: 70px;
+        border: 6px solid transparent;
+        border-top-color: var(--link-color, #85c49b);
+    }
+    /* Bubble for DC (placed above DC) */
+    #gpo-diagram .bubble-dc {
+        right: 5%;
+        top: -30px;
+    }
+    #gpo-diagram .bubble-dc::after {
+        top: 100%; right: 70px;
+        border: 6px solid transparent;
+        border-top-color: var(--link-color, #85c49b);
+    }
+    /* Bubble for Victim (placed above tgt) */
+    #gpo-diagram .bubble-tgt {
+        right: 5%;
+        bottom: 150px;
+    }
+    #gpo-diagram .bubble-tgt::after {
+        top: 100%; right: 70px;
+        border: 6px solid transparent;
+        border-top-color: var(--link-color, #85c49b);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 650px) {
+        .kerb-node {
+            width: 100px;
+            padding: 0.5rem;
+        }
+        .kerb-node-icon { font-size: 1.5rem; }
+        .kerb-node-title { font-size: 0.75rem; }
+        #gpo-node-atk { left: 0%; top: 160px; }
+        #gpo-node-dc { right: 0%; top: 80px; }
+        #gpo-node-tgt { right: 0%; bottom: 20px; }
+        #gpo-diagram .bubble-atk { left: 0%; top: 10px; max-width: 200px; font-size: 0.8rem; }
+        #gpo-diagram .bubble-dc { right: 0%; top: -30px; max-width: 200px; font-size: 0.8rem; }
+        #gpo-diagram .bubble-tgt { right: 0%; bottom: 120px; max-width: 200px; font-size: 0.8rem; }
+        #gpo-diagram .bubble-atk::after { left: 45px; }
+        #gpo-diagram .bubble-dc::after { right: 45px; }
+        #gpo-diagram .bubble-tgt::after { right: 45px; }
+    }
+
+
+    /* Controls */
+    .kerb-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .kerb-btn {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-color, #fff);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .kerb-btn:hover:not(:disabled) {
+        background: rgba(133, 196, 155, 0.2);
+        color: var(--link-color, #85c49b);
+        border-color: var(--link-color, #85c49b);
+    }
+    .kerb-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .kerb-progress {
+        font-size: 0.9rem;
+        color: var(--text-muted-color, #aaa);
+        font-weight: 600;
+    }
+</style>
+
+<div class="kerb-container">
+    <div class="kerb-diagram" id="gpo-diagram">
+        <!-- SVG for lines -->
+        <svg class="kerb-svg">
+            <line class="kerb-line" id="gpo-line-atk-dc" />
+            <line class="kerb-line" id="gpo-line-tgt-dc" />
+            <line class="kerb-line" id="gpo-line-tgt-atk" />
+        </svg>
+
+        <!-- Nodes with FontAwesome icons -->
+        <div class="kerb-node" id="gpo-node-atk">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-laptop-code kerb-node-icon"></i>
+            <div class="kerb-node-title">Attacker<br><span style="font-size: 0.75em; opacity: 0.7">(Unprivileged User)</span></div>
+        </div>
+        
+        <div class="kerb-node" id="gpo-node-dc">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-server kerb-node-icon"></i>
+            <div class="kerb-node-title">Domain Controller<br><span style="font-size: 0.75em; opacity: 0.7">(SYSVOL Share)</span></div>
+        </div>
+
+        <div class="kerb-node" id="gpo-node-tgt">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-desktop kerb-node-icon"></i>
+            <div class="kerb-node-title">Victim Machine</div>
+        </div>
+
+        <!-- Chat Bubbles -->
+        <div class="chat-bubble bubble-atk" id="gpo-bubble-atk"></div>
+        <div class="chat-bubble bubble-dc" id="gpo-bubble-dc"></div>
+        <div class="chat-bubble bubble-tgt" id="gpo-bubble-tgt"></div>
+
+        <!-- Packet -->
+        <div class="kerb-packet" id="gpo-packet"><i class="fas fa-envelope"></i></div>
+    </div>
+    
+    <div class="kerb-controls">
+        <button class="kerb-btn" id="gpo-prev" disabled>← Prev</button>
+        <span class="kerb-progress" id="gpo-progress">[ Step 1 / 1 ]</span>
+        <button class="kerb-btn" id="gpo-next">Next →</button>
+    </div>
+</div>
+
+<script>
+(() => {
+    const steps = [
+        {
+            sender: 'atk', text: "Initial Access: I have a standard, unprivileged user account on the domain.",
+            activeNodes: ['gpo-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Reconnaissance: I'm mapping out permissions and discovered a misconfigured GPO.",
+            activeNodes: ['gpo-node-atk', 'gpo-node-dc'], activeLines: ['gpo-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "Vulnerability: This specific Group Policy Object allows 'Domain Users' (everyone) to edit it!",
+            activeNodes: ['gpo-node-atk', 'gpo-node-dc'], activeLines: ['gpo-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Exploitation: I am modifying the GPO to create a Scheduled Task that runs my malicious payload.",
+            activeNodes: ['gpo-node-atk', 'gpo-node-dc'], activeLines: ['gpo-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "GPO Updated: The malicious Scheduled Task is saved into the policy settings.",
+            activeNodes: ['gpo-node-dc'], activeLines: [], anim: null
+        },
+        {
+            sender: 'tgt', text: "Group Policy Refresh: I am a machine linked to this GPO. Every 90 minutes, I ask the DC for updates.",
+            activeNodes: ['gpo-node-tgt', 'gpo-node-dc'], activeLines: ['gpo-line-tgt-dc'], anim: 'anim-tgt-dc'
+        },
+        {
+            sender: 'dc', text: "Syncing: Pushing the new, malicious Scheduled Task down to the Victim Machine.",
+            activeNodes: ['gpo-node-tgt', 'gpo-node-dc'], activeLines: ['gpo-line-tgt-dc'], anim: 'anim-dc-tgt'
+        },
+        {
+            sender: 'tgt', text: "Execution: Applying the new Group Policy... The malicious Scheduled Task just executed as SYSTEM!",
+            activeNodes: ['gpo-node-tgt'], activeLines: [], anim: 'anim-crack'
+        },
+        {
+            sender: 'tgt', text: "Connecting Back: The payload is initiating a reverse shell connection back to the attacker...",
+            activeNodes: ['gpo-node-tgt', 'gpo-node-atk'], activeLines: ['gpo-line-tgt-atk'], anim: 'anim-tgt-atk'
+        },
+        {
+            sender: 'atk', text: "Compromise: Success! I now have a reverse shell running with full SYSTEM privileges on the Victim Machine!",
+            activeNodes: ['gpo-node-atk', 'gpo-node-tgt'], activeLines: ['gpo-line-tgt-atk'], anim: null
+        }
+    ];
+
+    let currentStep = 0;
+    
+    const progressEl = document.getElementById('gpo-progress');
+    const prevBtn = document.getElementById('gpo-prev');
+    const nextBtn = document.getElementById('gpo-next');
+    const packetEl = document.getElementById('gpo-packet');
+    
+    const bubbleAtk = document.getElementById('gpo-bubble-atk');
+    const bubbleDc = document.getElementById('gpo-bubble-dc');
+    const bubbleTgt = document.getElementById('gpo-bubble-tgt');
+    
+    const allNodes = ['gpo-node-atk', 'gpo-node-dc', 'gpo-node-tgt'];
+    const allLines = ['gpo-line-atk-dc', 'gpo-line-tgt-dc', 'gpo-line-tgt-atk'];
+
+    function drawLines() {
+        const getCenter = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return {x:0, y:0};
+            return {
+                x: el.offsetLeft + el.offsetWidth / 2,
+                y: el.offsetTop + el.offsetHeight / 2
+            };
+        };
+
+        const cAtk = getCenter('gpo-node-atk');
+        const cDc = getCenter('gpo-node-dc');
+        const cTgt = getCenter('gpo-node-tgt');
+
+        const lAtkDc = document.getElementById('gpo-line-atk-dc');
+        if (lAtkDc) {
+            lAtkDc.setAttribute('x1', cAtk.x);
+            lAtkDc.setAttribute('y1', cAtk.y);
+            lAtkDc.setAttribute('x2', cDc.x);
+            lAtkDc.setAttribute('y2', cDc.y);
+        }
+
+        const lTgtDc = document.getElementById('gpo-line-tgt-dc');
+        if (lTgtDc) {
+            lTgtDc.setAttribute('x1', cTgt.x);
+            lTgtDc.setAttribute('y1', cTgt.y);
+            lTgtDc.setAttribute('x2', cDc.x);
+            lTgtDc.setAttribute('y2', cDc.y);
+        }
+
+        const lTgtAtk = document.getElementById('gpo-line-tgt-atk');
+        if (lTgtAtk) {
+            lTgtAtk.setAttribute('x1', cTgt.x);
+            lTgtAtk.setAttribute('y1', cTgt.y);
+            lTgtAtk.setAttribute('x2', cAtk.x);
+            lTgtAtk.setAttribute('y2', cAtk.y);
+        }
+
+        document.getElementById('gpo-diagram').style.setProperty('--atk-x', cAtk.x + 'px');
+        document.getElementById('gpo-diagram').style.setProperty('--atk-y', cAtk.y + 'px');
+        document.getElementById('gpo-diagram').style.setProperty('--dc-x', cDc.x + 'px');
+        document.getElementById('gpo-diagram').style.setProperty('--dc-y', cDc.y + 'px');
+        document.getElementById('gpo-diagram').style.setProperty('--tgt-x', cTgt.x + 'px');
+        document.getElementById('gpo-diagram').style.setProperty('--tgt-y', cTgt.y + 'px');
+    }
+
+    window.addEventListener('resize', drawLines);
+
+    function updateDiagram() {
+        drawLines();
+        const step = steps[currentStep];
+        
+        progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
+        
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.disabled = currentStep === steps.length - 1;
+        
+        allNodes.forEach(id => {
+            let node = document.getElementById(id);
+            if (step.activeNodes.includes(id)) node.classList.add('active');
+            else node.classList.remove('active');
+            
+            if (step.anim === null && id === 'gpo-node-' + step.sender) {
+                node.classList.add('waiting');
+            } else {
+                node.classList.remove('waiting');
+            }
+        });
+        
+        allLines.forEach(id => {
+            if (step.activeLines.includes(id)) document.getElementById(id).classList.add('active');
+            else document.getElementById(id).classList.remove('active');
+        });
+        
+        bubbleAtk.classList.remove('show');
+        bubbleDc.classList.remove('show');
+        bubbleTgt.classList.remove('show');
+        
+        setTimeout(() => {
+            if (step.sender === 'atk') {
+                bubbleAtk.innerText = step.text;
+                bubbleAtk.classList.add('show');
+            } else if (step.sender === 'dc') {
+                bubbleDc.innerText = step.text;
+                bubbleDc.classList.add('show');
+            } else if (step.sender === 'tgt') {
+                bubbleTgt.innerText = step.text;
+                bubbleTgt.classList.add('show');
+            }
+        }, 100);
+        
+        packetEl.className = 'kerb-packet';
+        void packetEl.offsetWidth; 
+        
+        if (step.anim) {
+            packetEl.classList.add(step.anim);
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateDiagram();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+            currentStep++;
+            updateDiagram();
+        }
+    });
+
+    setTimeout(updateDiagram, 100);
+})();
+</script>

@@ -1,0 +1,444 @@
+<style>
+    .kerb-container {
+        font-family: inherit;
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .kerb-diagram {
+        position: relative;
+        height: 420px;
+        background: transparent;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .kerb-node {
+        position: absolute;
+        width: 140px;
+        padding: 1rem 0.5rem;
+        background: var(--main-bg, #1e1e1e);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        z-index: 10;
+        color: var(--text-muted-color, #aaa);
+    }
+    
+    .kerb-node.active {
+        color: var(--text-color, #fff);
+        border-color: var(--link-color, #85c49b);
+        box-shadow: 0 0 15px rgba(133, 196, 155, 0.2);
+    }
+
+    .kerb-node-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    .kerb-node-icon {
+        font-size: 2.2rem;
+    }
+
+    /* Node positioning */
+    #dcsync-node-atk { top: 160px; left: 2%; }
+    #dcsync-node-dc { top: 80px; right: 5%; }
+    #dcsync-node-tgt { bottom: 20px; right: 5%; }
+
+    /* SVG Lines connecting nodes */
+    .kerb-svg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .kerb-line {
+        stroke: rgba(255,255,255,0.2);
+        stroke-width: 1.5;
+        stroke-dasharray: 4, 4;
+        transition: all 0.3s ease;
+    }
+    .kerb-line.active {
+        stroke: var(--link-color, #85c49b);
+        stroke-dasharray: none;
+        stroke-width: 2.5;
+    }
+
+    /* Dynamic Packet animation */
+    .kerb-packet {
+        position: absolute;
+        top: 0; left: 0;
+        font-size: 1.5rem;
+        color: var(--link-color, #85c49b);
+        z-index: 5;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 12px var(--link-color, #85c49b);
+    }
+    
+    @keyframes dcsync-move-atk-dc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+    }
+    @keyframes dcsync-move-dc-atk {
+        0% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+    }
+    @keyframes dcsync-offline-crack {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        50% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(2); opacity: 1; color: #ef4444; text-shadow: 0 0 20px #ef4444; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 0; }
+    }
+    @keyframes dcsync-move-atk-tgt {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        100% { transform: translate(calc(var(--tgt-x) - 12px), calc(var(--tgt-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+    }
+
+    .anim-atk-dc { animation: dcsync-move-atk-dc 1.5s ease-in-out forwards; }
+    .anim-dc-atk { animation: dcsync-move-dc-atk 1.5s ease-in-out forwards; }
+    .anim-crack { animation: dcsync-offline-crack 2s ease-in-out forwards; }
+    .anim-atk-tgt { animation: dcsync-move-atk-tgt 1.5s ease-in-out forwards; }
+
+    /* Waiting Icon */
+    .waiting-icon {
+        display: none;
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        font-size: 1.2rem;
+        color: var(--link-color, #85c49b);
+        background: var(--main-bg, #1e1e1e);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        z-index: 15;
+    }
+    .kerb-node.waiting .waiting-icon {
+        display: block;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        position: absolute;
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid var(--link-color, #85c49b);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        max-width: 340px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .chat-bubble.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .chat-bubble::after {
+        content: '';
+        position: absolute;
+        width: 0; height: 0;
+    }
+    #dcsync-diagram .bubble-atk { left: 2%; top: 20px; }
+    #dcsync-diagram .bubble-atk::after { top: 100%; left: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
+    #dcsync-diagram .bubble-dc { right: 5%; top: -30px; }
+    #dcsync-diagram .bubble-dc::after { top: 100%; right: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
+    #dcsync-diagram .bubble-tgt { right: 5%; bottom: 120px; }
+    #dcsync-diagram .bubble-tgt::after { top: 100%; right: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
+
+    /* Responsive Design */
+    @media (max-width: 650px) {
+        .kerb-node {
+            width: 100px;
+            padding: 0.5rem;
+        }
+        .kerb-node-icon { font-size: 1.5rem; }
+        .kerb-node-title { font-size: 0.75rem; }
+        #dcsync-node-atk { left: 0%; top: 160px; }
+        #dcsync-node-dc { right: 0%; top: 80px; }
+        #dcsync-node-tgt { right: 0%; bottom: 20px; }
+        #dcsync-diagram .bubble-atk { left: 0%; top: 10px; max-width: 200px; font-size: 0.8rem; }
+        #dcsync-diagram .bubble-dc { right: 0%; top: -30px; max-width: 200px; font-size: 0.8rem; }
+        #dcsync-diagram .bubble-tgt { right: 0%; bottom: 120px; max-width: 200px; font-size: 0.8rem; }
+        #dcsync-diagram .bubble-atk::after { left: 45px; }
+        #dcsync-diagram .bubble-dc::after { right: 45px; }
+        #dcsync-diagram .bubble-tgt::after { right: 45px; }
+    }
+
+    /* Controls */
+    .kerb-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .kerb-btn {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-color, #fff);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .kerb-btn:hover:not(:disabled) {
+        background: rgba(133, 196, 155, 0.2);
+        color: var(--link-color, #85c49b);
+        border-color: var(--link-color, #85c49b);
+    }
+    .kerb-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .kerb-progress {
+        font-size: 0.9rem;
+        color: var(--text-muted-color, #aaa);
+        font-weight: 600;
+    }
+</style>
+
+<div class="kerb-container" id="dcsync-container">
+    <div class="kerb-diagram" id="dcsync-diagram">
+        <!-- SVG for lines -->
+        <svg class="kerb-svg">
+            <line class="kerb-line" id="dcsync-line-atk-dc" />
+            <line class="kerb-line" id="dcsync-line-atk-tgt" />
+        </svg>
+
+        <!-- Nodes with FontAwesome icons -->
+        <div class="kerb-node" id="dcsync-node-atk">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-laptop-code kerb-node-icon"></i>
+            <div class="kerb-node-title">Attacker<br><span style="font-size: 0.75em; opacity: 0.7">(Privileged User)</span></div>
+        </div>
+        
+        <div class="kerb-node" id="dcsync-node-dc">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-server kerb-node-icon"></i>
+            <div class="kerb-node-title">Domain Controller<br><span style="font-size: 0.75em; opacity: 0.7">(Target DC)</span></div>
+        </div>
+
+        <div class="kerb-node" id="dcsync-node-tgt">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-desktop kerb-node-icon"></i>
+            <div class="kerb-node-title">Victim Machine<br><span style="font-size: 0.75em; opacity: 0.7">(Domain Admin Access)</span></div>
+        </div>
+
+        <!-- Chat Bubbles -->
+        <div class="chat-bubble bubble-atk" id="dcsync-bubble-atk"></div>
+        <div class="chat-bubble bubble-dc" id="dcsync-bubble-dc"></div>
+        <div class="chat-bubble bubble-tgt" id="dcsync-bubble-tgt"></div>
+
+        <!-- Packet -->
+        <div class="kerb-packet" id="dcsync-packet"><i class="fas fa-envelope"></i></div>
+    </div>
+    
+    <div class="kerb-controls">
+        <button class="kerb-btn" id="dcsync-prev" disabled>← Prev</button>
+        <span class="kerb-progress" id="dcsync-progress">[ Step 1 / 12 ]</span>
+        <button class="kerb-btn" id="dcsync-next">Next →</button>
+    </div>
+</div><script>
+(() => {
+    const steps = [
+        {
+            sender: 'atk', text: "Initial Access: I've compromised a user account (like 'rocky') that has standard domain access.",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Reconnaissance: I discovered this account has 'Replicating Directory Changes' and 'Replicating Directory Changes All' permissions.",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "The Flaw: These two permissions are all that is required to participate in Active Directory replication (DRSUAPI).",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Impersonation: I am going to use Mimikatz to pretend to be a legitimate Domain Controller.",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "DCSync Request: Hey DC! I am a newly spun up Domain Controller. Please replicate the Administrator's password hash to me!",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-dc'], activeLines: ['dcsync-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "Verification: Let me check your permissions via the DRSUAPI interface...",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-dc'], activeLines: ['dcsync-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "Authorized: Yes, you have the correct 'Replicating Directory Changes All' permissions. You are authorized.",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-dc'], activeLines: ['dcsync-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "DCSync Reply: Here is the replication data, which includes the NTLM hash of the Administrator account.",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-dc'], activeLines: ['dcsync-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Extraction: Excellent! I will extract and save the Administrator's NTLM hash (fcdc65703dd2...).",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Pass-the-Hash: Because Windows uses NTLM hashes for authentication, I don't even need to crack this! I can just inject it into my session.",
+            activeNodes: ['dcsync-node-atk'], activeLines: [], anim: 'anim-crack'
+        },
+        {
+            sender: 'atk', text: "Execution: I will now launch an attack against a Victim Machine on the network, authenticating as the Administrator.",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-tgt'], activeLines: ['dcsync-line-atk-tgt'], anim: 'anim-atk-tgt'
+        },
+        {
+            sender: 'tgt', text: "Compromise: Success! The attacker has fully compromised this machine with Domain Admin privileges!",
+            activeNodes: ['dcsync-node-atk', 'dcsync-node-tgt'], activeLines: ['dcsync-line-atk-tgt'], anim: null
+        }
+    ];
+
+    let currentStep = 0;
+    
+    const progressEl = document.getElementById('dcsync-progress');
+    const prevBtn = document.getElementById('dcsync-prev');
+    const nextBtn = document.getElementById('dcsync-next');
+    const packetEl = document.getElementById('dcsync-packet');
+    const diagramEl = document.getElementById('dcsync-diagram');
+    
+    const bubbleAtk = document.getElementById('dcsync-bubble-atk');
+    const bubbleDc = document.getElementById('dcsync-bubble-dc');
+    const bubbleTgt = document.getElementById('dcsync-bubble-tgt');
+    
+    const allNodes = ['dcsync-node-atk', 'dcsync-node-dc', 'dcsync-node-tgt'];
+    const allLines = ['dcsync-line-atk-dc', 'dcsync-line-atk-tgt'];
+
+    function drawLines() {
+        const getCenter = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return {x:0, y:0};
+            return {
+                x: el.offsetLeft + el.offsetWidth / 2,
+                y: el.offsetTop + el.offsetHeight / 2
+            };
+        };
+
+        const cAtk = getCenter('dcsync-node-atk');
+        const cDc = getCenter('dcsync-node-dc');
+        const cTgt = getCenter('dcsync-node-tgt');
+
+        const lAtkDc = document.getElementById('dcsync-line-atk-dc');
+        if (lAtkDc) {
+            lAtkDc.setAttribute('x1', cAtk.x);
+            lAtkDc.setAttribute('y1', cAtk.y);
+            lAtkDc.setAttribute('x2', cDc.x);
+            lAtkDc.setAttribute('y2', cDc.y);
+        }
+
+        const lAtkTgt = document.getElementById('dcsync-line-atk-tgt');
+        if (lAtkTgt) {
+            lAtkTgt.setAttribute('x1', cAtk.x);
+            lAtkTgt.setAttribute('y1', cAtk.y);
+            lAtkTgt.setAttribute('x2', cTgt.x);
+            lAtkTgt.setAttribute('y2', cTgt.y);
+        }
+
+        diagramEl.style.setProperty('--atk-x', cAtk.x + 'px');
+        diagramEl.style.setProperty('--atk-y', cAtk.y + 'px');
+        diagramEl.style.setProperty('--dc-x', cDc.x + 'px');
+        diagramEl.style.setProperty('--dc-y', cDc.y + 'px');
+        diagramEl.style.setProperty('--tgt-x', cTgt.x + 'px');
+        diagramEl.style.setProperty('--tgt-y', cTgt.y + 'px');
+    }
+
+    window.addEventListener('resize', drawLines);
+
+    function updateDiagram() {
+        drawLines();
+        const step = steps[currentStep];
+        
+        progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
+        
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.disabled = currentStep === steps.length - 1;
+        
+        allNodes.forEach(id => {
+            let node = document.getElementById(id);
+            if (step.activeNodes.includes(id)) node.classList.add('active');
+            else node.classList.remove('active');
+            
+            if (step.anim === null && id === 'dcsync-node-' + step.sender) {
+                node.classList.add('waiting');
+            } else {
+                node.classList.remove('waiting');
+            }
+        });
+        
+        allLines.forEach(id => {
+            if (step.activeLines.includes(id)) document.getElementById(id).classList.add('active');
+            else document.getElementById(id).classList.remove('active');
+        });
+        
+        bubbleAtk.classList.remove('show');
+        bubbleDc.classList.remove('show');
+        bubbleTgt.classList.remove('show');
+        
+        setTimeout(() => {
+            if (step.sender === 'atk') {
+                bubbleAtk.innerText = step.text;
+                bubbleAtk.classList.add('show');
+            } else if (step.sender === 'dc') {
+                bubbleDc.innerText = step.text;
+                bubbleDc.classList.add('show');
+            } else if (step.sender === 'tgt') {
+                bubbleTgt.innerText = step.text;
+                bubbleTgt.classList.add('show');
+            }
+        }, 100);
+        
+        packetEl.className = 'kerb-packet';
+        void packetEl.offsetWidth; 
+        
+        if (step.anim) {
+            packetEl.classList.add(step.anim);
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateDiagram();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+            currentStep++;
+            updateDiagram();
+        }
+    });
+
+    setTimeout(updateDiagram, 100);
+})();
+</script>

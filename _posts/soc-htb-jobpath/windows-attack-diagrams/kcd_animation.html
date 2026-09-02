@@ -1,0 +1,533 @@
+<style>
+    .kcd-container {
+        font-family: inherit;
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .kcd-diagram {
+        position: relative;
+        height: 420px;
+        background: transparent;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .kcd-node {
+        position: absolute;
+        width: 140px;
+        padding: 1rem 0.5rem;
+        background: var(--main-bg, #1e1e1e);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        z-index: 10;
+        color: var(--text-muted-color, #aaa);
+    }
+    
+    .kcd-node.active {
+        color: var(--text-color, #fff);
+        border-color: var(--link-color, #85c49b);
+        box-shadow: 0 0 15px rgba(133, 196, 155, 0.2);
+    }
+
+    .kcd-node-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    .kcd-node-icon {
+        font-size: 2.2rem;
+    }
+
+    /* Node positioning */
+    #kcd-node-user { top: 40px; left: 2%; }
+    #kcd-node-atk { top: 220px; left: 2%; }
+    #kcd-node-dc { top: 40px; right: 5%; }
+    #kcd-node-svc { top: 220px; right: 5%; }
+
+    /* SVG Lines connecting nodes */
+    .kcd-svg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .kcd-line {
+        stroke: rgba(255,255,255,0.2);
+        stroke-width: 1.5;
+        stroke-dasharray: 4, 4;
+        transition: all 0.3s ease;
+    }
+    .kcd-line.active {
+        stroke: var(--link-color, #85c49b);
+        stroke-dasharray: none;
+        stroke-width: 2.5;
+    }
+
+    /* Dynamic Packet animation */
+    .kcd-packet {
+        position: absolute;
+        top: 0; left: 0;
+        font-size: 1.5rem;
+        color: var(--link-color, #85c49b);
+        z-index: 5;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 12px var(--link-color, #85c49b);
+    }
+    
+    @keyframes move-atk-dc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+    }
+    @keyframes move-dc-atk {
+        0% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+    }
+    @keyframes offline-crack {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        50% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(2); opacity: 1; color: #ef4444; text-shadow: 0 0 20px #ef4444; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)) scale(1); opacity: 0; }
+    }
+
+    @keyframes move-user-atk {
+        0% { transform: translate(calc(var(--user-x) - 12px), calc(var(--user-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+    }
+
+    @keyframes move-atk-svc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; color: var(--link-color); text-shadow: 0 0 10px var(--link-color); }
+        100% { transform: translate(calc(var(--svc-x) - 12px), calc(var(--svc-y) - 12px)); opacity: 1; color: #ef4444; text-shadow: 0 0 15px #ef4444; }
+    }
+
+    .anim-user-atk { animation: move-user-atk 1.5s ease-in-out forwards; }
+    .anim-atk-dc { animation: move-atk-dc 1.5s ease-in-out forwards; }
+    .anim-dc-atk { animation: move-dc-atk 1.5s ease-in-out forwards; }
+    .anim-crack { animation: offline-crack 2s ease-in-out forwards; }
+    .anim-atk-svc { animation: move-atk-svc 1.5s ease-in-out forwards; }
+
+    /* Waiting Icon */
+    .waiting-icon {
+        display: none;
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        font-size: 1.2rem;
+        color: var(--link-color, #85c49b);
+        background: var(--main-bg, #1e1e1e);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        z-index: 15;
+    }
+    .kcd-node.waiting .waiting-icon {
+        display: block;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        position: absolute;
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid var(--link-color, #85c49b);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        max-width: 250px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .chat-bubble.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .chat-bubble::after {
+        content: '';
+        position: absolute;
+        width: 0; height: 0;
+    }
+    /* Bubble for User (placed to the right of User) */
+    .bubble-user { left: 180px; top: 40px; }
+    .bubble-user::after { top: 20px; right: 100%; left: auto; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
+    /* Bubble for Attacker (placed to the right of Attacker) */
+    .bubble-atk { left: 180px; top: 220px; }
+    .bubble-atk::after { top: 20px; right: 100%; left: auto; border: 6px solid transparent; border-right-color: var(--link-color, #85c49b); }
+    /* Bubble for DC (placed to the left of DC) */
+    .bubble-dc { right: 200px; top: 40px; }
+    .bubble-dc::after { top: 20px; left: 100%; right: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    /* Bubble for SVC (placed to the left of SVC) */
+    .bubble-svc { right: 200px; top: 220px; }
+    .bubble-svc::after { top: 20px; left: 100%; right: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+
+    /* Responsive Design */
+    @media (max-width: 650px) {
+        .kcd-node {
+            width: 100px;
+            padding: 0.5rem;
+        }
+        .kcd-node-icon { font-size: 1.5rem; }
+        .kcd-node-title { font-size: 0.75rem; }
+        #kcd-node-user { left: 0%; top: 40px; }
+        #kcd-node-atk { left: 0%; top: 200px; }
+        #kcd-node-dc { right: 0%; top: 40px; }
+        #kcd-node-svc { right: 0%; top: 200px; }
+        .bubble-user { left: 110px; top: 30px; max-width: 150px; font-size: 0.75rem; }
+        .bubble-atk { left: 110px; top: 210px; max-width: 150px; font-size: 0.75rem; }
+        .bubble-dc { right: 110px; top: 30px; max-width: 150px; font-size: 0.75rem; }
+        .bubble-svc { right: 110px; top: 210px; max-width: 150px; font-size: 0.75rem; }
+        .bubble-user::after { left: auto; right: 100%; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
+        .bubble-atk::after { left: auto; right: 100%; top: 20px; border-color: transparent var(--link-color, #85c49b) transparent transparent; }
+        .bubble-dc::after { right: auto; left: 100%; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
+        .bubble-svc::after { right: auto; left: 100%; top: 20px; border-color: transparent transparent transparent var(--link-color, #85c49b); }
+    }
+
+
+    /* Controls */
+    .kcd-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .kcd-btn {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-color, #fff);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .kcd-btn:hover:not(:disabled) {
+        background: rgba(133, 196, 155, 0.2);
+        color: var(--link-color, #85c49b);
+        border-color: var(--link-color, #85c49b);
+    }
+    .kcd-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .kcd-progress {
+        font-size: 0.9rem;
+        color: var(--text-muted-color, #aaa);
+        font-weight: 600;
+    }
+</style>
+
+<div class="kcd-container">
+    <div class="kcd-diagram" id="kcd-diagram">
+        <!-- SVG for lines -->
+        <svg class="kcd-svg">
+            <line class="kcd-line" id="kcd-line-user-atk" />
+            <line class="kcd-line" id="kcd-line-atk-dc" />
+            <line class="kcd-line" id="kcd-line-atk-svc" />
+        </svg>
+
+        <!-- Nodes with FontAwesome icons -->
+        <div class="kcd-node" id="kcd-node-user">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-user-tie kcd-node-icon"></i>
+            <div class="kcd-node-title">Administrator<br><span style="font-size: 0.75em; opacity: 0.7">(Impersonated)</span></div>
+        </div>
+
+        <div class="kcd-node" id="kcd-node-atk">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-laptop-code kcd-node-icon"></i>
+            <div class="kcd-node-title">Attacker<br><span style="font-size: 0.75em; opacity: 0.7">(Delegation Account)</span></div>
+        </div>
+        
+        <div class="kcd-node" id="kcd-node-dc">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-server kcd-node-icon"></i>
+            <div class="kcd-node-title">Domain Controller<br><span style="font-size: 0.75em; opacity: 0.7">(KDC)</span></div>
+        </div>
+        
+        <div class="kcd-node" id="kcd-node-svc">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-desktop kcd-node-icon"></i>
+            <div class="kcd-node-title">Target Server<br><span style="font-size: 0.75em; opacity: 0.7">(Backend Service)</span></div>
+        </div>
+
+        <!-- Chat Bubbles -->
+        <div class="chat-bubble bubble-user" id="kcd-bubble-user"></div>
+        <div class="chat-bubble bubble-atk" id="kcd-bubble-atk"></div>
+        <div class="chat-bubble bubble-dc" id="kcd-bubble-dc"></div>
+        <div class="chat-bubble bubble-svc" id="kcd-bubble-svc"></div>
+
+        <!-- Packet -->
+        <div class="kcd-packet" id="kcd-packet"><i class="fas fa-envelope"></i></div>
+    </div>
+    
+    <div class="kcd-controls">
+        <button class="kcd-btn" id="kcd-prev" disabled>← Prev</button>
+        <span class="kcd-progress" id="kcd-progress">[ Step 1 / 1 ]</span>
+        <button class="kcd-btn" id="kcd-next">Next →</button>
+    </div>
+</div>
+
+<script>
+(() => {
+            const steps = [
+        {
+            sender: 'user', text: "The Legitimate Flow: The Administrator wants to access their files on the Target Server.",
+            activeNodes: ['kcd-node-user'], activeLines: [], anim: null
+        },
+        {
+            sender: 'user', text: "Authentication: Hi WebSvc! I am the Administrator. I am logging into your web application using my password.",
+            activeNodes: ['kcd-node-user', 'kcd-node-atk'], activeLines: ['kcd-line-user-atk'], anim: 'anim-user-atk'
+        },
+        {
+            sender: 'atk', text: "Welcome, Administrator! You want to view your files, but those files are stored on the Backend Target Server.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Since I am just a web server, I don't have access to your files. I need to ask the Backend Server for them, *as you*.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "S4U2Proxy Request: Hey KDC! The Administrator just logged in. I need a Service Ticket to access the Target Server on their behalf.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "KDC Verification: Let me check... Yes, WebSvc is trusted for Constrained Delegation to the Backend Target Server.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "S4U2Proxy Reply: Here is the Service Ticket for the Target Server, cryptographically signed for the 'Administrator'.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Execution: Hey Target Server, I am the Administrator (forwarded by WebSvc). Here is my ticket, please give me the files!",
+            activeNodes: ['kcd-node-atk', 'kcd-node-svc'], activeLines: ['kcd-line-atk-svc'], anim: 'anim-atk-svc'
+        },
+        {
+            sender: 'svc', text: "Target Server: Ticket looks valid! Here are the Administrator's files.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-svc'], activeLines: ['kcd-line-atk-svc'], anim: null
+        },
+
+        {
+            sender: 'atk', text: "Initial Access: I've compromised a service account ('WebSvc') that has the TRUSTED_TO_AUTH_FOR_DELEGATION flag set.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "The Flaw: Because of this flag, I can use a trick called S4U2Self to forge a fake authentication for the Administrator.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "What is S4U2Self?: It's an extension that allows a service to ask the KDC for a ticket on behalf of a user. Since I control the service, I can simply lie to the KDC and say the Administrator authenticated to me!",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "S4U2Self Request: Hey KDC... The Administrator TOTALLY just authenticated to me. Can I get a forwardable ticket proving they are here?",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "KDC Verification: Let me check... Yes, WebSvc has the Protocol Transition flag. You are allowed to vouch for users.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "S4U2Self Reply: I trust you, WebSvc. Here is a Forwardable Ticket proving the Administrator authenticated to you.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Perfect! I just conjured proof of the Administrator out of thin air. Now I can perform the standard delegation request.",
+            activeNodes: ['kcd-node-atk'], activeLines: [], anim: 'anim-crack'
+        },
+        {
+            sender: 'atk', text: "S4U2Proxy Request: Hey KDC! Here is the proof that the Administrator is with me. I need to access the Target Server on their behalf!",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "KDC Verification: Let me check... Yes, WebSvc is explicitly allowed to delegate access to that specific Target Server.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "S4U2Proxy Reply: Everything is authorized. Here is the final Service Ticket granting the Administrator access to the Target Server.",
+            activeNodes: ['kcd-node-atk', 'kcd-node-dc'], activeLines: ['kcd-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Execution: Hey Target Server! I am the Administrator, and here is a valid Service Ticket from the KDC to prove it!",
+            activeNodes: ['kcd-node-atk', 'kcd-node-svc'], activeLines: ['kcd-line-atk-svc'], anim: 'anim-atk-svc'
+        },
+        {
+            sender: 'svc', text: "Compromise: The KDC signed this ticket! I bypassed the password entirely and gained Domain Admin access!",
+            activeNodes: ['kcd-node-atk', 'kcd-node-svc'], activeLines: ['kcd-line-atk-svc'], anim: null
+        }
+    ];
+
+    let currentStep = 0;
+    
+    const progressEl = document.getElementById('kcd-progress');
+    const prevBtn = document.getElementById('kcd-prev');
+    const nextBtn = document.getElementById('kcd-next');
+    const packetEl = document.getElementById('kcd-packet');
+    
+    const bubbleUser = document.getElementById('kcd-bubble-user');
+    const bubbleAtk = document.getElementById('kcd-bubble-atk');
+    const bubbleDc = document.getElementById('kcd-bubble-dc');
+    const bubbleSvc = document.getElementById('kcd-bubble-svc');
+    
+    const allNodes = ['kcd-node-user', 'kcd-node-atk', 'kcd-node-dc', 'kcd-node-svc'];
+    const allLines = ['kcd-line-user-atk', 'kcd-line-atk-dc', 'kcd-line-atk-svc'];
+
+    function drawLines() {
+        const getCenter = (id) => {
+            const el = document.getElementById(id);
+            if (!el) return {x:0, y:0};
+            return {
+                x: el.offsetLeft + el.offsetWidth / 2,
+                y: el.offsetTop + el.offsetHeight / 2
+            };
+        };
+
+        const cUser = getCenter('kcd-node-user');
+        const cAtk = getCenter('kcd-node-atk');
+        const cDc = getCenter('kcd-node-dc');
+        const cSvc = getCenter('kcd-node-svc');
+
+        // Update SVG Lines
+        const lUserAtk = document.getElementById('kcd-line-user-atk');
+        if (lUserAtk) {
+            lUserAtk.setAttribute('x1', cUser.x);
+            lUserAtk.setAttribute('y1', cUser.y);
+            lUserAtk.setAttribute('x2', cAtk.x);
+            lUserAtk.setAttribute('y2', cAtk.y);
+        }
+
+        const lAtkDc = document.getElementById('kcd-line-atk-dc');
+        if (lAtkDc) {
+            lAtkDc.setAttribute('x1', cAtk.x);
+            lAtkDc.setAttribute('y1', cAtk.y);
+            lAtkDc.setAttribute('x2', cDc.x);
+            lAtkDc.setAttribute('y2', cDc.y);
+        }
+
+        const lAtkSvc = document.getElementById('kcd-line-atk-svc');
+        if (lAtkSvc) {
+            lAtkSvc.setAttribute('x1', cAtk.x);
+            lAtkSvc.setAttribute('y1', cAtk.y);
+            lAtkSvc.setAttribute('x2', cSvc.x);
+            lAtkSvc.setAttribute('y2', cSvc.y);
+        }
+
+        // Update CSS Variables for Packet Animation
+        const diag = document.getElementById('kcd-diagram');
+        diag.style.setProperty('--user-x', cUser.x + 'px');
+        diag.style.setProperty('--user-y', cUser.y + 'px');
+        diag.style.setProperty('--atk-x', cAtk.x + 'px');
+        diag.style.setProperty('--atk-y', cAtk.y + 'px');
+        diag.style.setProperty('--dc-x', cDc.x + 'px');
+        diag.style.setProperty('--dc-y', cDc.y + 'px');
+        diag.style.setProperty('--svc-x', cSvc.x + 'px');
+        diag.style.setProperty('--svc-y', cSvc.y + 'px');
+    }
+
+    // Recalculate on load and resize
+    window.addEventListener('resize', drawLines);
+
+    function updateDiagram() {
+        drawLines();
+        const step = steps[currentStep];
+        
+        progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
+        
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.disabled = currentStep === steps.length - 1;
+        
+        allNodes.forEach(id => {
+            let node = document.getElementById(id);
+            if (node) {
+                if (step.activeNodes.includes(id)) node.classList.add('active');
+                else node.classList.remove('active');
+                
+                if (step.anim === null && id === 'kcd-node-' + step.sender) {
+                    node.classList.add('waiting');
+                } else {
+                    node.classList.remove('waiting');
+                }
+            }
+        });
+        
+        allLines.forEach(id => {
+            let line = document.getElementById(id);
+            if (line) {
+                if (step.activeLines.includes(id)) line.classList.add('active');
+                else line.classList.remove('active');
+            }
+        });
+        
+        bubbleUser.classList.remove('show');
+        bubbleAtk.classList.remove('show');
+        bubbleDc.classList.remove('show');
+        bubbleSvc.classList.remove('show');
+        
+        setTimeout(() => {
+            if (step.sender === 'user') {
+                bubbleUser.innerText = step.text;
+                bubbleUser.classList.add('show');
+            } else if (step.sender === 'atk') {
+                bubbleAtk.innerText = step.text;
+                bubbleAtk.classList.add('show');
+            } else if (step.sender === 'dc') {
+                bubbleDc.innerText = step.text;
+                bubbleDc.classList.add('show');
+            } else if (step.sender === 'svc') {
+                bubbleSvc.innerText = step.text;
+                bubbleSvc.classList.add('show');
+            }
+        }, 100);
+        
+        packetEl.className = 'kcd-packet';
+        void packetEl.offsetWidth; 
+        
+        if (step.anim) {
+            packetEl.classList.add(step.anim);
+        }
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateDiagram();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+            currentStep++;
+            updateDiagram();
+        }
+    });
+
+    setTimeout(updateDiagram, 100);
+})();
+</script>
