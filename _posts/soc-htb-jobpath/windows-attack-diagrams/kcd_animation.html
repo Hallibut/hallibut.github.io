@@ -459,82 +459,90 @@
     window.addEventListener('resize', drawLines);
 
     function updateDiagram() {
-        try {
-            drawLines();
-            const step = steps[currentStep];
+        try { drawLines(); } catch(e) { console.error(e); }
+        if (!steps || !steps.length) return;
+        const step = steps[currentStep];
+        if (!step) return;
         
-        progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
+        if (progressEl) progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
         
-        prevBtn.disabled = currentStep === 0;
-        nextBtn.disabled = currentStep === steps.length - 1;
+        if (prevBtn) prevBtn.disabled = currentStep === 0;
+        if (nextBtn) nextBtn.disabled = currentStep === steps.length - 1;
         
-        allNodes.forEach(id => {
-            let node = document.getElementById(id);
-            if (node) {
-                if (step.activeNodes.includes(id)) node.classList.add('active');
-                else node.classList.remove('active');
-                
-                if (step.anim === null && id === 'kcd-node-' + step.sender) {
-                    node.classList.add('waiting');
-                } else {
-                    node.classList.remove('waiting');
+        if (allNodes && step.activeNodes) {
+            allNodes.forEach(id => {
+                let node = document.getElementById(id);
+                if (node) {
+                    if (step.activeNodes.includes(id)) node.classList.add('active');
+                    else node.classList.remove('active');
+                    
+                    if (step.anim === null && id === 'kcd-node-' + step.sender) {
+                        node.classList.add('waiting');
+                    } else {
+                        node.classList.remove('waiting');
+                    }
                 }
-            }
-        });
+            });
+        }
         
-        allLines.forEach(id => {
-            let line = document.getElementById(id);
-            if (line) {
-                if (step.activeLines.includes(id)) line.classList.add('active');
-                else line.classList.remove('active');
-            }
-        });
+        if (allLines && step.activeLines) {
+            allLines.forEach(id => {
+                let line = document.getElementById(id);
+                if (line) {
+                    if (step.activeLines.includes(id)) line.classList.add('active');
+                    else line.classList.remove('active');
+                }
+            });
+        }
         
-        bubbleUser.classList.remove('show');
-        bubbleAtk.classList.remove('show');
-        bubbleDc.classList.remove('show');
-        bubbleSvc.classList.remove('show');
+        if (bubbleUser) bubbleUser.classList.remove('show');
+        if (bubbleAtk) bubbleAtk.classList.remove('show');
+        if (bubbleDc) bubbleDc.classList.remove('show');
+        if (bubbleSvc) bubbleSvc.classList.remove('show');
         
         setTimeout(() => {
-            if (step.sender === 'user') {
+            if (step.sender === 'user' && bubbleUser) {
                 bubbleUser.innerText = step.text;
                 bubbleUser.classList.add('show');
-            } else if (step.sender === 'atk') {
+            } else if (step.sender === 'atk' && bubbleAtk) {
                 bubbleAtk.innerText = step.text;
                 bubbleAtk.classList.add('show');
-            } else if (step.sender === 'dc') {
+            } else if (step.sender === 'dc' && bubbleDc) {
                 bubbleDc.innerText = step.text;
                 bubbleDc.classList.add('show');
-            } else if (step.sender === 'svc') {
+            } else if (step.sender === 'svc' && bubbleSvc) {
                 bubbleSvc.innerText = step.text;
                 bubbleSvc.classList.add('show');
             }
         }, 100);
         
-        packetEl.className = 'kcd-packet';
-        void packetEl.offsetWidth; 
-        
-        if (step.anim) {
-            packetEl.classList.add(step.anim);
-        }
-        } catch (e) {
-            progressEl.innerText = "Error: " + e.message;
+        if (packetEl) {
+            packetEl.className = 'kcd-packet';
+            void packetEl.offsetWidth; 
+            
+            if (step.anim) {
+                packetEl.classList.add(step.anim);
+            }
         }
     }
 
-    prevBtn.addEventListener('click', () => {
-        if (currentStep > 0) {
-            currentStep--;
-            updateDiagram();
-        }
-    });
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateDiagram();
+            }
+        });
+    }
 
-    nextBtn.addEventListener('click', () => {
-        if (currentStep < steps.length - 1) {
-            currentStep++;
-            updateDiagram();
-        }
-    });
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateDiagram();
+            }
+        });
+    }
 
     setTimeout(updateDiagram, 100);
 })();
