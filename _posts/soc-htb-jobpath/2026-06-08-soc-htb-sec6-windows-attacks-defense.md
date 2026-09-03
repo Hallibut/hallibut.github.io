@@ -396,7 +396,7 @@ The file being read is Groups.xml and Access Mask **0x80** (**ReadAttributes)** 
 
 - Inspect **EventID** **4624 (An account was successfully logged on)**,   **EventID** **4625 (An account failed to log on).** Analyzing users' behavior
 
-![copyImage.png](copyImage.png)
+
 
 - Search for the NetBIOS name of the domain because attackers often use this to search for passwords.
 - Use **Honey pot,** follow these mindsets when setup:
