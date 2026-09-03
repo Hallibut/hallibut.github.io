@@ -19,7 +19,7 @@ tags: [cdsa, study-notes, htb-soc-jobpath, javascript, deobfuscation, reverse-en
         - **Step 3: Reverse the process.** The computer looks up the dictionary and translates `0(1)` back into text: `"alert('Hi')"`
         - **Step 4: Execute.** The command `eval("alert('Hi')")` receives this text, turns it into a real command, and displays the "Hi" dialog box on the screen.
 
-[[http://beautifytools.com/javascript-obfuscator.php](http://beautifytools.com/javascript-obfuscator.php)]
+[[https://beautifytools.com/javascript-obfuscator.php](https://beautifytools.com/javascript-obfuscator.php)]
 
 ![image.png](/assets/img/cdsa/sec11-js-deobfuscation/image.png)
 
