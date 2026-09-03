@@ -1,0 +1,472 @@
+<style>
+    .kerb-container {
+        font-family: inherit;
+        margin: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .kerb-diagram {
+        position: relative;
+        height: 420px;
+        background: transparent;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .kerb-node {
+        position: absolute;
+        width: 140px;
+        padding: 1rem 0.5rem;
+        background: var(--main-bg, #1e1e1e);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        z-index: 10;
+        color: var(--text-muted-color, #aaa);
+    }
+    
+    .kerb-node.active {
+        color: var(--text-color, #fff);
+        border-color: var(--link-color, #85c49b);
+        box-shadow: 0 0 15px rgba(133, 196, 155, 0.2);
+    }
+
+    .kerb-node-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    .kerb-node-icon {
+        font-size: 2.2rem;
+    }
+
+    /* Node positioning */
+    #spooler-node-atk { top: 160px; left: 2%; }
+    #spooler-node-vic { top: 30px; right: 5%; }
+    #spooler-node-dc { bottom: 30px; right: 5%; }
+
+    /* SVG Lines connecting nodes */
+    .kerb-svg {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .kerb-line {
+        stroke: rgba(255,255,255,0.2);
+        stroke-width: 1.5;
+        stroke-dasharray: 4, 4;
+        transition: all 0.3s ease;
+    }
+    .kerb-line.active {
+        stroke: var(--link-color, #85c49b);
+        stroke-dasharray: none;
+        stroke-width: 2.5;
+    }
+
+    /* Dynamic Packet animation */
+    .kerb-packet {
+        position: absolute;
+        top: 0; left: 0;
+        font-size: 1.5rem;
+        color: var(--link-color, #85c49b);
+        z-index: 5;
+        opacity: 0;
+        pointer-events: none;
+        text-shadow: 0 0 12px var(--link-color, #85c49b);
+    }
+    
+    @keyframes spooler-move-atk-vic {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--vic-x) - 12px), calc(var(--vic-y) - 12px)); opacity: 1; }
+    }
+    @keyframes spooler-move-vic-atk {
+        0% { transform: translate(calc(var(--vic-x) - 12px), calc(var(--vic-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+    }
+    @keyframes spooler-move-atk-dc {
+        0% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+    }
+    @keyframes spooler-move-dc-atk {
+        0% { transform: translate(calc(var(--dc-x) - 12px), calc(var(--dc-y) - 12px)); opacity: 1; }
+        100% { transform: translate(calc(var(--atk-x) - 12px), calc(var(--atk-y) - 12px)); opacity: 1; }
+    }
+
+    .anim-atk-vic { animation: spooler-move-atk-vic 1.5s ease-in-out forwards; }
+    .anim-vic-atk { animation: spooler-move-vic-atk 1.5s ease-in-out forwards; }
+    .anim-atk-dc { animation: spooler-move-atk-dc 1.5s ease-in-out forwards; }
+    .anim-dc-atk { animation: spooler-move-dc-atk 1.5s ease-in-out forwards; }
+
+    /* Waiting Icon */
+    .waiting-icon {
+        display: none;
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        font-size: 1.2rem;
+        color: var(--link-color, #85c49b);
+        background: var(--main-bg, #1e1e1e);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        z-index: 15;
+    }
+    .kerb-node.waiting .waiting-icon {
+        display: block;
+    }
+
+    /* Chat Bubbles */
+    .chat-bubble {
+        position: absolute;
+        background: rgba(30, 30, 30, 0.95);
+        border: 1px solid var(--link-color, #85c49b);
+        color: #fff;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        max-width: 340px;
+        z-index: 20;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+    .chat-bubble.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .chat-bubble::after {
+        content: '';
+        position: absolute;
+        width: 0; height: 0;
+    }
+    #spooler-diagram .bubble-atk { left: 2%; top: 60px; }
+    #spooler-diagram .bubble-atk::after { top: auto; bottom: -12px; left: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
+    #spooler-diagram .bubble-vic { right: 200px; top: 30px; }
+    #spooler-diagram .bubble-vic::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    #spooler-diagram .bubble-dc { right: 200px; bottom: 30px; }
+    #spooler-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+
+    /* Responsive Design */
+    @media (max-width: 650px) {
+        .kerb-node {
+            width: 100px;
+            padding: 0.5rem;
+        }
+        .kerb-node-icon { font-size: 1.5rem; }
+        .kerb-node-title { font-size: 0.75rem; }
+        #spooler-node-atk { left: 0%; top: 160px; }
+        #spooler-node-vic { right: 0%; top: 40px; }
+        #spooler-node-dc { right: 0%; bottom: 30px; }
+        #spooler-diagram .bubble-atk { left: 0%; top: 60px; max-width: 200px; font-size: 0.8rem; }
+        #spooler-diagram .bubble-vic { right: 110px; top: 30px; max-width: 200px; font-size: 0.8rem; }
+        #spooler-diagram .bubble-dc { right: 110px; bottom: 30px; max-width: 200px; font-size: 0.8rem; }
+        #spooler-diagram .bubble-atk::after { left: 45px; }
+        #spooler-diagram .bubble-vic::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+        #spooler-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    }
+
+    /* Controls */
+    .kerb-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1rem;
+    }
+    
+    .kerb-btn {
+        background: rgba(255,255,255,0.05);
+        color: var(--text-color, #fff);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 0.5rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .kerb-btn:hover:not(:disabled) {
+        background: rgba(133, 196, 155, 0.2);
+        color: var(--link-color, #85c49b);
+        border-color: var(--link-color, #85c49b);
+    }
+    .kerb-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+    
+    .kerb-progress {
+        font-size: 0.9rem;
+        color: var(--text-muted-color, #aaa);
+        font-weight: 600;
+    }
+</style>
+
+<div class="kerb-container" id="spooler-container">
+    <div class="kerb-diagram" id="spooler-diagram">
+        <!-- SVG for lines -->
+        <svg class="kerb-svg">
+            <line class="kerb-line" id="spooler-line-atk-vic" />
+            <line class="kerb-line" id="spooler-line-atk-dc" />
+        </svg>
+
+        <!-- Nodes with FontAwesome icons -->
+        <div class="kerb-node" id="spooler-node-atk">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-laptop-code kerb-node-icon"></i>
+            <div class="kerb-node-title">Attacker<br><span style="font-size: 0.75em; opacity: 0.7">(NTLMRelayx)</span></div>
+        </div>
+        
+        <div class="kerb-node" id="spooler-node-vic">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-server kerb-node-icon"></i>
+            <div class="kerb-node-title">Victim Machine<br><span style="font-size: 0.75em; opacity: 0.7">(Print Spooler)</span></div>
+        </div>
+
+        <div class="kerb-node" id="spooler-node-dc">
+            <i class="fas fa-spinner fa-spin waiting-icon"></i>
+            <i class="fas fa-sitemap kerb-node-icon"></i>
+            <div class="kerb-node-title">Target DC<br><span style="font-size: 0.75em; opacity: 0.7">(DCSync target)</span></div>
+        </div>
+
+        <!-- Chat Bubbles -->
+        <div class="chat-bubble bubble-atk" id="spooler-bubble-atk"></div>
+        <div class="chat-bubble bubble-vic" id="spooler-bubble-vic"></div>
+        <div class="chat-bubble bubble-dc" id="spooler-bubble-dc"></div>
+
+        <!-- Packet -->
+        <div class="kerb-packet" id="spooler-packet"><i class="fas fa-envelope"></i></div>
+    </div>
+    
+    <div class="kerb-controls">
+        <button class="kerb-btn" id="spooler-prev" disabled>← Prev</button>
+        <span class="kerb-progress" id="spooler-progress">[ Step 1 / 14 ]</span>
+        <button class="kerb-btn" id="spooler-next">Next →</button>
+    </div>
+</div><script>
+(() => {
+    const steps = [
+        {
+            sender: 'atk', text: "Setup: I will start NTLMRelayx targeting the Domain Controller (e.g. 10.10.10.2) to perform a DCSync attack.",
+            activeNodes: ['spooler-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Triggering: Execute 'dementor.py' with valid domain credentials, targeting the Victim Machine (e.g. another DC or Exchange Server).",
+            activeNodes: ['spooler-node-atk', 'spooler-node-vic'], activeLines: ['spooler-line-atk-vic'], anim: 'anim-atk-vic'
+        },
+        {
+            sender: 'vic', text: "RPC Request: I received an RpcRemoteFindFirstPrinterChangeNotification request from the attacker's IP.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-vic'], activeLines: ['spooler-line-atk-vic'], anim: null
+        },
+        {
+            sender: 'vic', text: "Coercion: The PrinterBug forces me to notify the requesting IP. I will initiate an SMB connection back to the attacker.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-vic'], activeLines: ['spooler-line-atk-vic'], anim: null
+        },
+        {
+            sender: 'vic', text: "Authentication: To connect via SMB, I will send my machine account's NTLM authentication (e.g. VICTIM$ hash).",
+            activeNodes: ['spooler-node-atk', 'spooler-node-vic'], activeLines: ['spooler-line-atk-vic'], anim: 'anim-vic-atk'
+        },
+        {
+            sender: 'atk', text: "Interception: NTLMRelayx catches the incoming SMB authentication. I won't complete the handshake locally.",
+            activeNodes: ['spooler-node-atk'], activeLines: [], anim: null
+        },
+        {
+            sender: 'atk', text: "Relaying: Instead, I will forward this NTLM authentication packet directly to the Target DC over the network.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "Processing: I received an authentication request. Let's verify the NTLM challenge/response.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "Verification: The credentials belong to VICTIM$. Let me check if SMB Signing is required.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "SMB Signing: SMB Signing is disabled on my end, so I will accept this relayed authentication session.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'atk', text: "DCSync Request: Now that I have an authenticated session as VICTIM$, I will send a DRSUAPI GetNCChanges (DCSync) request.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: 'anim-atk-dc'
+        },
+        {
+            sender: 'dc', text: "Authorization: VICTIM$ is a Domain Controller (or has high privileges), so it holds 'Replicating Directory Changes' rights.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: null
+        },
+        {
+            sender: 'dc', text: "DCSync Reply: Request approved. Here is the replication data containing the NTLM hashes for all domain users.",
+            activeNodes: ['spooler-node-atk', 'spooler-node-dc'], activeLines: ['spooler-line-atk-dc'], anim: 'anim-dc-atk'
+        },
+        {
+            sender: 'atk', text: "Success: NTLMRelayx dumps the hashes. I now have the Domain Admin hash and can compromise the entire domain!",
+            activeNodes: ['spooler-node-atk'], activeLines: [], anim: null
+        }
+    ];
+
+    let currentStep = 0;
+    
+    const progressEl = document.getElementById('spooler-progress');
+    const prevBtn = document.getElementById('spooler-prev');
+    const nextBtn = document.getElementById('spooler-next');
+    const packetEl = document.getElementById('spooler-packet');
+    const diagramEl = document.getElementById('spooler-diagram');
+    
+    const bubbleAtk = document.getElementById('spooler-bubble-atk');
+    const bubbleVic = document.getElementById('spooler-bubble-vic');
+    const bubbleDc = document.getElementById('spooler-bubble-dc');
+    
+    const allNodes = ['spooler-node-atk', 'spooler-node-vic', 'spooler-node-dc'];
+    const allLines = ['spooler-line-atk-vic', 'spooler-line-atk-dc'];
+
+    function drawLines() {
+        try {
+            const getCenter = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return {x:0, y:0};
+                return {
+                    x: el.offsetLeft + el.offsetWidth / 2,
+                    y: el.offsetTop + el.offsetHeight / 2
+                };
+            };
+
+            const cAtk = getCenter('spooler-node-atk');
+            const cVic = getCenter('spooler-node-vic');
+            const cDc = getCenter('spooler-node-dc');
+
+            const lAtkVic = document.getElementById('spooler-line-atk-vic');
+            if (lAtkVic) {
+                lAtkVic.setAttribute('x1', cAtk.x);
+                lAtkVic.setAttribute('y1', cAtk.y);
+                lAtkVic.setAttribute('x2', cVic.x);
+                lAtkVic.setAttribute('y2', cVic.y);
+            }
+
+            const lAtkDc = document.getElementById('spooler-line-atk-dc');
+            if (lAtkDc) {
+                lAtkDc.setAttribute('x1', cAtk.x);
+                lAtkDc.setAttribute('y1', cAtk.y);
+                lAtkDc.setAttribute('x2', cDc.x);
+                lAtkDc.setAttribute('y2', cDc.y);
+            }
+
+            diagramEl.style.setProperty('--atk-x', cAtk.x + 'px');
+            diagramEl.style.setProperty('--atk-y', cAtk.y + 'px');
+            diagramEl.style.setProperty('--vic-x', cVic.x + 'px');
+            diagramEl.style.setProperty('--vic-y', cVic.y + 'px');
+            diagramEl.style.setProperty('--dc-x', cDc.x + 'px');
+            diagramEl.style.setProperty('--dc-y', cDc.y + 'px');
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    window.addEventListener('resize', drawLines);
+
+    function updateDiagram() {
+        try { drawLines(); } catch(e) { console.error(e); }
+        if (!steps || !steps.length) return;
+        
+        const step = steps[currentStep];
+        if (!step) return;
+        
+        if (progressEl) progressEl.innerText = `[ Step ${currentStep + 1} / ${steps.length} ]`;
+        
+        if (prevBtn) prevBtn.disabled = currentStep === 0;
+        if (nextBtn) nextBtn.disabled = currentStep === steps.length - 1;
+        
+        if (allNodes && step.activeNodes) {
+            allNodes.forEach(id => {
+                let node = document.getElementById(id);
+                if (node) {
+                    if (step.activeNodes.includes(id)) node.classList.add('active');
+                    else node.classList.remove('active');
+                    
+                    if (step.anim === null && id === 'spooler-node-' + step.sender) {
+                        node.classList.add('waiting');
+                    } else {
+                        node.classList.remove('waiting');
+                    }
+                }
+            });
+        }
+        
+        if (allLines && step.activeLines) {
+            allLines.forEach(id => {
+                let line = document.getElementById(id);
+                if (line) {
+                    if (step.activeLines.includes(id)) line.classList.add('active');
+                    else line.classList.remove('active');
+                }
+            });
+        }
+        
+        if (bubbleAtk) bubbleAtk.classList.remove('show');
+        if (bubbleVic) bubbleVic.classList.remove('show');
+        if (bubbleDc) bubbleDc.classList.remove('show');
+        
+        setTimeout(() => {
+            if (step.sender === 'atk' && bubbleAtk) {
+                bubbleAtk.innerText = step.text;
+                bubbleAtk.classList.add('show');
+            } else if (step.sender === 'vic' && bubbleVic) {
+                bubbleVic.innerText = step.text;
+                bubbleVic.classList.add('show');
+            } else if (step.sender === 'dc' && bubbleDc) {
+                bubbleDc.innerText = step.text;
+                bubbleDc.classList.add('show');
+            }
+        }, 100);
+        
+        if (packetEl) {
+            packetEl.className = 'kerb-packet';
+            void packetEl.offsetWidth; 
+            if (step.anim) {
+                packetEl.classList.add(step.anim);
+            }
+        }
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                updateDiagram();
+            }
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateDiagram();
+            }
+        });
+    }
+
+    setTimeout(updateDiagram, 100);
+})();
+</script>

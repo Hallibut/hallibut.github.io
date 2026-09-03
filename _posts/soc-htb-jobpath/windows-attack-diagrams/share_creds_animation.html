@@ -164,7 +164,7 @@
     /* Bubble for Attacker (placed above) */
     #share-diagram .bubble-atk {
         left: 2%;
-        top: 20px;
+        top: 60px;
     }
     #share-diagram .bubble-atk::after {
         top: auto; bottom: -12px; left: 70px;
@@ -172,15 +172,8 @@
         border-top-color: var(--link-color, #85c49b);
     }
     /* Bubble for DC (placed above DC) */
-    #share-diagram .bubble-dc {
-        right: 5%;
-        top: -30px;
-    }
-    #share-diagram .bubble-dc::after {
-        top: auto; bottom: -12px; right: 70px;
-        border: 6px solid transparent;
-        border-top-color: var(--link-color, #85c49b);
-    }
+    #share-diagram .bubble-dc { right: 200px; top: 80px; }
+    #share-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
 
     /* Responsive Design */
     @media (max-width: 650px) {
@@ -192,10 +185,10 @@
         .kerb-node-title { font-size: 0.75rem; }
         #share-node-atk { left: 0%; top: 160px; }
         #share-node-dc { right: 0%; top: 80px; }
-        #share-diagram .bubble-atk { left: 0%; top: 10px; max-width: 200px; font-size: 0.8rem; }
-        #share-diagram .bubble-dc { right: 0%; top: -30px; max-width: 200px; font-size: 0.8rem; }
+        #share-diagram .bubble-atk { left: 0%; top: 60px; max-width: 200px; font-size: 0.8rem; }
+        #share-diagram .bubble-dc { right: 110px; top: 80px; max-width: 200px; font-size: 0.8rem; }
         #share-diagram .bubble-atk::after { left: 45px; }
-        #share-diagram .bubble-dc::after { right: 45px; }
+        #share-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
     }
 
 

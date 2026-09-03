@@ -165,12 +165,12 @@
     #golden-node-dc { top: 80px; right: 5%; }
     #golden-node-tgt { bottom: 20px; right: 5%; }
 
-    #golden-diagram .bubble-atk { left: 2%; top: 20px; }
+    #golden-diagram .bubble-atk { left: 2%; top: 60px; }
     #golden-diagram .bubble-atk::after { top: auto; bottom: -12px; left: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
-    #golden-diagram .bubble-dc { right: 5%; top: -30px; }
-    #golden-diagram .bubble-dc::after { top: auto; bottom: -12px; right: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
-    #golden-diagram .bubble-tgt { right: 5%; bottom: 120px; }
-    #golden-diagram .bubble-tgt::after { top: auto; bottom: -12px; right: 70px; border: 6px solid transparent; border-top-color: var(--link-color, #85c49b); }
+    #golden-diagram .bubble-dc { right: 200px; top: 80px; }
+    #golden-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+    #golden-diagram .bubble-tgt { right: 200px; bottom: 20px; }
+    #golden-diagram .bubble-tgt::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
 
     /* Responsive Design */
     @media (max-width: 650px) {
@@ -183,12 +183,12 @@
         #golden-node-atk { left: 0%; top: 160px; }
         #golden-node-dc { right: 0%; top: 80px; }
         #golden-node-tgt { right: 0%; bottom: 20px; }
-        #golden-diagram .bubble-atk { left: 0%; top: 10px; max-width: 200px; font-size: 0.8rem; }
-        #golden-diagram .bubble-dc { right: 0%; top: -30px; max-width: 200px; font-size: 0.8rem; }
-        #golden-diagram .bubble-tgt { right: 0%; bottom: 120px; max-width: 200px; font-size: 0.8rem; }
+        #golden-diagram .bubble-atk { left: 0%; top: 60px; max-width: 200px; font-size: 0.8rem; }
+        #golden-diagram .bubble-dc { right: 110px; top: 80px; max-width: 200px; font-size: 0.8rem; }
+        #golden-diagram .bubble-tgt { right: 110px; bottom: 20px; max-width: 200px; font-size: 0.8rem; }
         #golden-diagram .bubble-atk::after { left: 45px; }
-        #golden-diagram .bubble-dc::after { right: 45px; }
-        #golden-diagram .bubble-tgt::after { right: 45px; }
+        #golden-diagram .bubble-dc::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
+        #golden-diagram .bubble-tgt::after { top: 20px; bottom: auto; right: -12px; left: auto; border: 6px solid transparent; border-left-color: var(--link-color, #85c49b); }
     }
 
 
