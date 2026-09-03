@@ -1,4 +1,4 @@
-# Halibut's Archive
+# Hallibut's Archive
 
 Welcome to the personal blog and archive of [Hallibut](https://github.com/Hallibut).
 
