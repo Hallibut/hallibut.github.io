@@ -14,19 +14,19 @@ timezone:
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: Halibut # the main title
+title: Hallibut # the main title
 
 tagline: Mastermind, HaNoi, VN # it will display as the subtitle
 
 description: >- # used by seo meta and the atom feed
-  An archive from Halibut.
+  An archive from Hallibut.
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://halibut205.github.io"
+url: "https://hallibut.github.io"
 
 github:
-  username: Halibut205 # change to your GitHub username
+  username: Hallibut # change to your GitHub username
 
 twitter:
   username: Minhc46660281 # change to your Twitter username
@@ -40,7 +40,7 @@ social:
   links:
     # The first element serves as the copyright owner's link
     - https://x.com/Minhc46660281
-    - https://github.com/Halibut205
+    - https://github.com/Hallibut
     - https://www.facebook.com/halibut205/
     - https://www.linkedin.com/in/duc-pham-0a97572a2/
 
