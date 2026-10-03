@@ -33,7 +33,7 @@ index=revil
 
 Splunk returned **1,153 events**, all from a machine with **host = Windows** and source **winlog.ndjson**. Each event is a JSON document. The crucial part resides within the **winlog** key, and Splunk turns each key into a field searchable via dot notation, such as **winlog.event_id** or **winlog.event_data.Image**. The Image field contains the program's path. Clicking the **[+]** next to winlog expands it to view the details inside.
 
-Before hunting, I wanted to know what types of events were present. In Splunk, commands are chained together using the pipe **|** symbol: the left side finds events, and the right side processes the results. The **stats count by X** command groups events by the value of X and then counts each group.
+Before hunting, I wanted to know what types of events were present. In Splunk, commands are chained together using the pipe **`|`** symbol: the left side finds events, and the right side processes the results. The **stats count by X** command groups events by the value of X and then counts each group.
 
 ```text
 index=revil
@@ -115,7 +115,7 @@ To decode it, I copied the Base64 string into **CyberChef**, a browser-based too
 
 The result was a one-line script. **Get-WmiObject Win32_Shadowcopy** retrieves a list of all shadow copies via WMI, the Windows management interface. The pipe `|` passes each shadow copy to **ForEach-Object**, and **$_.Delete()** deletes the current shadow copy being processed. In short, this command finds all backups on the machine and deletes them all. It ran at **16:09:53**, six seconds before the first ransom note, so the backups were destroyed before the encryption even started.
 
-**Answer: Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}**
+**Answer: `Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}`**
 
 > **Q5: As we trace the ransomware's steps, a deeper verification is needed. Can you provide the sha256 hash of the ransomware's executable to cross-check with known malicious signatures?**
 
@@ -157,6 +157,6 @@ The same report listed the behavior **Sets desktop wallpaper using registry**, a
 > 
 > By hunting through the Sysmon logs of an encrypted machine on Splunk, using just a few SPL queries for Event IDs 1 and 11, then decoding a command with CyberChef and cross-referencing the hash on the Triage sandbox, I successfully reconstructed the entire infection chain. At **16:09:50 UTC on 2023-09-07**, the user double-clicked **facebook assistant.exe** in the Administrator's **Downloads** directory. Its parent process was **explorer.exe**, and the REvil/Sodinokibi ransomware began running with **PID 5348**.
 > 
-> Three seconds later, the ransomware spawned **powershell.exe -e** with a Base64-encoded UTF-16LE command, which decoded to **Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}**, deleting all Volume Shadow Copies so the victim could not restore their files. From **16:09:59 to 16:10:14**, it dropped the ransom note **5uizv5660t-readme.txt** into 21 directories across the Administrator, Default, and Public profiles. According to the sandbox report, it also changed the desktop wallpaper via the registry.
+> Three seconds later, the ransomware spawned **powershell.exe -e** with a Base64-encoded UTF-16LE command, which decoded to **`Get-WmiObject Win32_Shadowcopy | ForEach-Object {$_.Delete();}`**, deleting all Volume Shadow Copies so the victim could not restore their files. From **16:09:59 to 16:10:14**, it dropped the ransom note **5uizv5660t-readme.txt** into 21 directories across the Administrator, Default, and Public profiles. According to the sandbox report, it also changed the desktop wallpaper via the registry.
 > 
 > The file's SHA256 hash was **b8d7fb4488c0556385498271ab9fffdf0eb38bb2a330265d9852e3a6288092aa**, matching a public Triage report tagged as Sodinokibi. The configuration extracted from that report pointed victims to the Tor payment portal **aplebzu47wgazapdqks6vrcv6zcnjppkbxbr6wketf56nf6aq2nmyoyd.onion**. This hash and onion domain are the key indicators to hunt for across the client's other machines, along with any PowerShell process executing encoded commands spawned from the Downloads directory.
