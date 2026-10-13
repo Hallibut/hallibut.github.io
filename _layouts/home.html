@@ -31,7 +31,7 @@ layout: default
     flex-shrink: 0;
   }
   .lang-badge.lang-en::before { background-color: #60a5fa; }
-  .lang-badge.lang-vi::before { background-color: #fb923c; }
+  .lang-badge.lang-vi::before { background-color: #ef4444; }
 </style>
 {% include lang.html %}
 
@@ -206,7 +206,7 @@ layout: default
               </div>
 
               <div class="lang-badge {% if post.post_lang == 'vi' %}lang-vi{% else %}lang-en{% endif %} ms-1">
-                {% if post.post_lang == 'vi' %}Tiếng Việt{% else %}English{% endif %}
+                {% if post.post_lang == 'vi' %}VI{% else %}EN{% endif %}
               </div>
               {% if post.pin %}
                 <div class="pin ms-1">
