@@ -17,28 +17,24 @@ layout: default
   .lang-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 999px;
-    vertical-align: middle;
-    margin-left: 8px;
-    position: relative;
-    top: -2px;
-    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
     border: 1px solid;
     white-space: nowrap;
+    line-height: 1.6;
   }
   .lang-badge.lang-en {
     color: #60a5fa;
-    border-color: rgba(96,165,250,0.45);
-    background: rgba(96,165,250,0.1);
+    border-color: rgba(96,165,250,0.4);
+    background: rgba(96,165,250,0.08);
   }
   .lang-badge.lang-vi {
-    color: #f97316;
-    border-color: rgba(249,115,22,0.45);
-    background: rgba(249,115,22,0.1);
+    color: #fb923c;
+    border-color: rgba(251,146,60,0.4);
+    background: rgba(251,146,60,0.08);
   }
 </style>
 {% include lang.html %}
@@ -189,7 +185,7 @@ layout: default
 
         <div class="col-md-{{ card_body_col }}">
           <div class="card-body d-flex flex-column">
-            <h1 class="card-title my-2 mt-md-0">{{ post.title }}{% if post.post_lang == 'vi' %}<span class="lang-badge lang-vi">🇻🇳 VI</span>{% else %}<span class="lang-badge lang-en">🇬🇧 EN</span>{% endif %}</h1>
+            <h1 class="card-title my-2 mt-md-0">{{ post.title }}</h1>
 
             <div class="card-text content mt-0 mb-3">
               <p>{% include post-summary.html %}</p>
@@ -213,6 +209,9 @@ layout: default
                 {% endif %}
               </div>
 
+              <div class="lang-badge {% if post.post_lang == 'vi' %}lang-vi{% else %}lang-en{% endif %} ms-1">
+                {% if post.post_lang == 'vi' %}🇻🇳 VI{% else %}🇬🇧 EN{% endif %}
+              </div>
               {% if post.pin %}
                 <div class="pin ms-1">
                   <i class="fas fa-thumbtack fa-fw"></i>
