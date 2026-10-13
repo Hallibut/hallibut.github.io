@@ -14,6 +14,32 @@ layout: default
     width: 100%;
     height: 100%;
   }
+  .lang-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    vertical-align: middle;
+    margin-left: 8px;
+    position: relative;
+    top: -2px;
+    letter-spacing: 0.04em;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .lang-badge.lang-en {
+    color: #60a5fa;
+    border-color: rgba(96,165,250,0.45);
+    background: rgba(96,165,250,0.1);
+  }
+  .lang-badge.lang-vi {
+    color: #f97316;
+    border-color: rgba(249,115,22,0.45);
+    background: rgba(249,115,22,0.1);
+  }
 </style>
 {% include lang.html %}
 
@@ -163,7 +189,7 @@ layout: default
 
         <div class="col-md-{{ card_body_col }}">
           <div class="card-body d-flex flex-column">
-            <h1 class="card-title my-2 mt-md-0">{{ post.title }}</h1>
+            <h1 class="card-title my-2 mt-md-0">{{ post.title }}{% if post.post_lang == 'vi' %}<span class="lang-badge lang-vi">🇻🇳 VI</span>{% else %}<span class="lang-badge lang-en">🇬🇧 EN</span>{% endif %}</h1>
 
             <div class="card-text content mt-0 mb-3">
               <p>{% include post-summary.html %}</p>

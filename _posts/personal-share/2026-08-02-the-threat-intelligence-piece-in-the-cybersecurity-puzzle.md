@@ -3,6 +3,7 @@ title: "The Threat Intelligence Piece in the Cybersecurity Puzzle"
 date: 2026-08-02 19:00:00 +0700
 categories: [Personal Share]
 tags: [threat-intel, cyber-defenders]
+post_lang: vi
 pin: true
 image:
   path: /assets/img/personal-share/how-i-make-my-cyber-adversaries-cry/CTIGA.png
