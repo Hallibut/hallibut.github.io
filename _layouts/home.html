@@ -31,7 +31,7 @@ layout: default
     flex-shrink: 0;
   }
   .lang-badge.lang-en::before { background-color: #60a5fa; }
-  .lang-badge.lang-vi::before { background-color: #ef4444; }
+  .lang-badge.lang-vi::before, .lang-badge.lang-vn::before { background-color: #ef4444; }
 </style>
 {% include lang.html %}
 
@@ -97,6 +97,9 @@ layout: default
                 <i class="far fa-folder-open fa-fw me-1"></i>
                 <span class="categories">Cyber Defenders</span>
               </div>
+              <div class="lang-badge lang-en ms-1">
+                EN
+              </div>
               <div class="pin ms-1">
                 <i class="fas fa-thumbtack fa-fw"></i>
                 <span>Pinned Category</span>
@@ -123,6 +126,39 @@ layout: default
               <div class="me-auto">
                 <i class="far fa-folder-open fa-fw me-1"></i>
                 <span class="categories">HTB SOC Jobpath</span>
+              </div>
+              <div class="lang-badge lang-en ms-1">
+                EN
+              </div>
+              <div class="pin ms-1">
+                <i class="fas fa-thumbtack fa-fw"></i>
+                <span>Pinned Category</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </article>
+    <article class="card-wrapper card">
+      <a href="{{ '/categories/cscv-2026/' | relative_url }}" class="post-preview row g-0 flex-md-row-reverse" style="border: 2px solid var(--color-primary);">
+        <div class="col-md-5">
+          <img src="{{ '/assets/img/ctf/cscv-2026-quals/cscv-banner.png' | relative_url }}" alt="CSCV 2026 Writeups Banner">
+        </div>
+        <div class="col-md-7">
+          <div class="card-body d-flex flex-column">
+            <h1 class="card-title my-2 mt-md-0">
+              <i class="fas fa-flag me-2" style="color: var(--color-primary);"></i> CSCV 2026 Writeups
+            </h1>
+            <div class="card-text content mt-0 mb-3">
+              <p>Tổng hợp các bài writeup vòng Sơ khảo và Chung khảo cuộc thi Sinh viên với An toàn thông tin (CSCV 2026).</p>
+            </div>
+            <div class="post-meta flex-grow-1 d-flex align-items-end">
+              <div class="me-auto">
+                <i class="far fa-folder-open fa-fw me-1"></i>
+                <span class="categories">CTF Writeups, CSCV 2026</span>
+              </div>
+              <div class="lang-badge lang-vn ms-1">
+                VN
               </div>
               <div class="pin ms-1">
                 <i class="fas fa-thumbtack fa-fw"></i>
@@ -205,8 +241,8 @@ layout: default
                 {% endif %}
               </div>
 
-              <div class="lang-badge {% if post.post_lang == 'vi' %}lang-vi{% else %}lang-en{% endif %} ms-1">
-                {% if post.post_lang == 'vi' %}VI{% else %}EN{% endif %}
+              <div class="lang-badge {% if post.post_lang == 'vi' or post.post_lang == 'vn' %}lang-vn{% else %}lang-en{% endif %} ms-1">
+                {% if post.post_lang == 'vi' or post.post_lang == 'vn' %}VN{% else %}EN{% endif %}
               </div>
               {% if post.pin %}
                 <div class="pin ms-1">
