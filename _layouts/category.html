@@ -83,6 +83,14 @@ layout: page
   </div>
   {% endif %}
 
+  {% if page.title == 'CSC 2026' or page.title == 'CSCV 2026' %}
+  <div class="mt-4 mb-5">
+    <a href="{{ '/assets/img/ctf/cscv-2026/853153572_1563616235783026_1613510061213911335_n.jpg' | relative_url }}" target="_blank" rel="noopener noreferrer">
+      <img src="{{ '/assets/img/ctf/cscv-2026/853153572_1563616235783026_1613510061213911335_n.jpg' | relative_url }}" alt="CSC 2026 Finals Scoreboard" class="img-fluid rounded shadow border" style="border-color: var(--card-border-color, rgba(121, 174, 111, 0.3)) !important; max-width: 100%; height: auto;">
+    </a>
+  </div>
+  {% endif %}
+
   <ul class="content ps-0">
     {% for post in page.posts %}
       <li class="d-flex justify-content-between px-md-3">
