@@ -83,7 +83,7 @@ index=shadowroast winlog.event_id=11 winlog.event_data.TargetFilename="C:\\Users
 
 ![image 5.png](/assets/img/cyber-defenders/shadowroast/image%205.png)
 
-Between **01:07:09** and **01:07:19**, `AdobeUpdater.exe` wrote three files to **C:\Users\Default\AppData\Local\Temp\**: **BackupUtility.exe**, **SystemDiagnostics.ps1**, and **DefragTool.exe**. The `Default` directory is a template profile used by Windows when creating profiles for new users; it is rarely accessed by anyone, making it a stealthy location for the attacker's toolkit. The filenames were also disguised as legitimate system utilities. The last row shows a file named `CrashDump.zip` on `FileServer`, which was also dropped in this exact path—I will revisit this in Q8.
+Between **01:07:09** and **01:07:19**, `AdobeUpdater.exe` wrote three files to **C:\Users\Default\AppData\Local\Temp\**: **BackupUtility.exe**, **SystemDiagnostics.ps1**, and **DefragTool.exe**. The `Default` directory is a template profile used by Windows when creating profiles for new users; it is rarely accessed by anyone, making it a stealthy location for the attacker's toolkit. The filenames were also disguised as legitimate system utilities. The last row shows a file named `CrashDump.zip` on `FileServer`, which was also dropped in this exact path (I will revisit this in Q8).
 
 **Answer: C:\Users\Default\AppData\Local\Temp\**
 
@@ -108,7 +108,7 @@ The `OriginalFileName` field is hardcoded into the file during compilation and r
 
 > **Q5: Was the attacker's credential harvesting successful? If so, can you provide the compromised domain account username?**
 
-First, it is important to understand how AS-REP Roasting works. When a user logs into a domain, the machine sends a request for a TGT ticket to the domain controller. Normally, this request must include a timestamp encrypted with the user's password—known as pre-authentication—to prove the requester knows the password. If an account has this requirement disabled, anyone can request a ticket for it, and a portion of the response will be encrypted using the account's password. The attacker can then take this encrypted portion offline and crack it using tools like hashcat, matching the `/format:hashcat` parameter seen in Q4. The domain controller logs every TGT issuance as Event **4768**, which includes a **PreAuthType** field; a value of 0 indicates no pre-authentication was used.
+First, it is important to understand how AS-REP Roasting works. When a user logs into a domain, the machine sends a request for a TGT ticket to the domain controller. Normally, this request must include a timestamp encrypted with the user's password (known as pre-authentication) to prove the requester knows the password. If an account has this requirement disabled, anyone can request a ticket for it, and a portion of the response will be encrypted using the account's password. The attacker can then take this encrypted portion offline and crack it using tools like hashcat, matching the `/format:hashcat` parameter seen in Q4. The domain controller logs every TGT issuance as Event **4768**, which includes a **PreAuthType** field; a value of 0 indicates no pre-authentication was used.
 
 ```spl
 index=shadowroast source="*DC01*" winlog.event_id=4768 @timestamp>"2024-08-06T01:05" @timestamp<"2024-08-06T01:14"
@@ -202,7 +202,7 @@ At **01:20:44**, `tcooper`'s `explorer.exe` launched **powershell.exe -noexit -c
 
 > **Conclusion**
 > 
-> By threat hunting within Splunk using the Security and Sysmon logs of three machines—**Office-PC**, **FileServer**, and **DC01**—I successfully reconstructed an Active Directory attack that unfolded over approximately **16 minutes** on the morning of **2024-08-06**. At **01:05:11**, the user **sanderson** executed **AdobeUpdater.exe** from the Downloads folder on `Office-PC`. Less than a minute later, it established persistence by creating the Run key **wyW5PZyF** to load a registry-hidden payload upon login, and dropped **Rubeus**, a PowerShell script, and **mimikatz** into **C:\Users\Default\AppData\Local\Temp\** using masqueraded names like `BackupUtility.exe` and `DefragTool.exe`.
+> By threat hunting within Splunk using the Security and Sysmon logs of three machines (**Office-PC**, **FileServer**, and **DC01**), I successfully reconstructed an Active Directory attack that unfolded over approximately **16 minutes** on the morning of **2024-08-06**. At **01:05:11**, the user **sanderson** executed **AdobeUpdater.exe** from the Downloads folder on `Office-PC`. Less than a minute later, it established persistence by creating the Run key **wyW5PZyF** to load a registry-hidden payload upon login, and dropped **Rubeus**, a PowerShell script, and **mimikatz** into **C:\Users\Default\AppData\Local\Temp\** using masqueraded names like `BackupUtility.exe` and `DefragTool.exe`.
 > 
 > At **01:10:45**, Rubeus performed AS-REP Roasting and obtained tickets for four accounts lacking pre-authentication requirements. The password for **tcooper**, an administrative account, was successfully cracked and utilized via `runas` at **01:13:28**. Leveraging SYSTEM and `tcooper` privileges, the attacker executed a mimikatz DCShadow attack, registering `Office-PC` as a rogue domain controller to manipulate Active Directory data; DC01 subsequently logged the removal of this replication source at **01:15:21**.
 > 
