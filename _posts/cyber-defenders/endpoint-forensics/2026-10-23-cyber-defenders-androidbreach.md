@@ -62,7 +62,7 @@ The downloaded file in the folder was named **Discord_nitro_Mod.apk**.
 
 > **Q3: What is the malicious package name found in the APK?**
 
-An APK file is fundamentally a ZIP archive containing DEX bytecode, resources, and manifest metadata. To analyze the contents of the APK, I used **JADX-GUI**, an open-source Android decompiler.
+An APK file is fundamentally a [ZIP archive](https://en.wikipedia.org/wiki/ZIP_(file_format%29) containing DEX bytecode, resources, and manifest metadata. To analyze the contents of the APK, I used **JADX-GUI**, an open-source Android decompiler.
 
 ![image 3.png](/assets/img/cyber-defenders/androidbreach/image%203.png)
 

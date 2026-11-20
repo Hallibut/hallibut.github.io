@@ -24,7 +24,7 @@ A classic endpoint triage scenario dealing with Active Directory compromise and 
 
 > **Q1: The attack began with using a Group Policy Object (GPO) to execute a malicious batch file. What is the name of the malicious GPO responsible for initiating the attack by running a script?**
 
-In Windows Active Directory environments, Group Policy Objects (GPOs) can configure scripts to run automatically during system startup or user logon. These Startup/Shutdown scripts are tracked within the system registry under `HKLM`.
+I came across this insightful [YouTube video](https://youtu.be/gjI3zLeaOlY?si=xZsY0N5FFSrb8OiN), which gave me a clearer overview of how attackers abuse Group Policy. In Windows Active Directory environments, Group Policy Objects (GPOs) can configure scripts to run automatically during system startup or user logon. These Startup/Shutdown scripts are tracked within the system registry under `HKLM`.
 
 ![image 1.png](/assets/img/cyber-defenders/meteorhit-indra/image%201.png)
 
@@ -153,7 +153,7 @@ Reviewing the child commands spawned by `env.exe` showed several `bcdedit.exe /d
 
 ![image 14.png](/assets/img/cyber-defenders/meteorhit-indra/image%2014.png)
 
-According to Microsoft documentation, the well-known identifier for the Windows Boot Manager object is `{9dea862c-5cdd-4e70-acc1-f32b344d4795}`. Tracing the log entries for this specific GUID revealed the exact deletion command:
+According to [Microsoft documentation on boot option identifiers](https://learn.microsoft.com/en-us/windows-hardware/drivers/devtest/boot-options-identifiers), the well-known identifier for the Windows Boot Manager object is `{9dea862c-5cdd-4e70-acc1-f32b344d4795}`. Tracing the log entries for this specific GUID revealed the exact deletion command:
 
 ```text
 C:\Windows\Sysnative\bcdedit.exe /delete {9dea862c-5cdd-4e70-acc1-f32b344d4795} /f

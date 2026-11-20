@@ -91,6 +91,12 @@ layout: page
   </div>
   {% endif %}
 
+  {% if page.title == 'HTB SOC Jobpath' %}
+  <div class="mt-4 mb-5">
+    <img src="{{ '/assets/img/cdsa/cdsa-certificate.jpg' | relative_url }}" alt="HTB Certified Defensive Security Analyst (CDSA) Certificate" class="img-fluid" style="max-width: 100%; height: auto;">
+  </div>
+  {% endif %}
+
   <ul class="content ps-0">
     {% for post in page.posts %}
       <li class="d-flex justify-content-between px-md-3">
